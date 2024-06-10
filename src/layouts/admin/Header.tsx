@@ -1,25 +1,27 @@
 import {
+    AppBar,
     Avatar,
     Badge,
     Box,
-    Input,
     useMediaQuery
 } from "@mui/material";
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import {deepPurple} from "@mui/material/colors";
 import {Mail, Notifications} from "@mui/icons-material";
 import IconButtonGradient from "../../components/common/IconButtonGradient.tsx";
 import logoIcon from "../../assets/logo/logo-icon.png";
 import {useState} from "react";
 import NavBar from "./NavBar.tsx";
+import logoIconFull from "../../assets/logo/logo.png";
+import SearchInput from "../../components/admin/search-input/SearchInput.tsx";
 
 type HeaderProps = {
     openNavbar: () => void;
+    isOpenNavbar: boolean;
 }
 
-const Header = ({openNavbar}: HeaderProps) => {
+const Header = ({openNavbar, isOpenNavbar}: HeaderProps) => {
     const isMobile: boolean = useMediaQuery('(max-width:600px)');
     const [open, setOpen] = useState(false);
     const toggleDrawer = (newOpen: boolean) => () => {
@@ -30,19 +32,20 @@ const Header = ({openNavbar}: HeaderProps) => {
         <NavBar isOpenNavbar={true}></NavBar>
     );
 
-    return <Box sx={{display: "flex", p: 1, alignItems: "center", justifyContent: 'space-between'}}>
+    return <AppBar sx={{display: "flex", flexDirection: 'row', p: 1, alignItems: "center",
+        justifyContent: 'space-between', backgroundColor: "background.paper"}}>
         {isMobile ? <><img src={logoIcon} alt={"logo"} width={"55px"} height={"55px"}/></> :
-            <Box sx={{width: '40%', display: "flex"}}>
+            <Box sx={{width: '40%', display: "flex", alignItems: 'center'}}>
+                <Box>
+                    {isOpenNavbar ?
+                        <img src={logoIconFull} alt={"logo"} width={"100px"} height={"50px"} />
+                        :
+                        <img src={logoIcon} alt={"logo"} width={"50px"} height={"50px"}/>}
+                </Box>
                 <IconButtonGradient aria-label="menu" onClick={() => openNavbar()}>
                     <MenuIcon/>
                 </IconButtonGradient>
-                <Input
-                    sx={{flex: 1}}
-                    placeholder="Nhập nội dung cần tìm"
-                />
-                <IconButtonGradient type="button" aria-label="search">
-                    <SearchIcon/>
-                </IconButtonGradient>
+                <SearchInput placeHolder={"Nhập nội dung cần tìm"}/>
             </Box>}
         <Box sx={{
             display: "flex", width: isMobile ? '40%' : '20%', justifyContent: 'space-evenly',
@@ -68,7 +71,7 @@ const Header = ({openNavbar}: HeaderProps) => {
                 </Drawer>
             </Box> : <></>}
         </Box>
-    </Box>
+    </AppBar>
 }
 
 export default Header;
