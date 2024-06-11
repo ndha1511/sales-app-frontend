@@ -10,9 +10,11 @@ export const theme = extendTheme({
                 },
                 secondary: {
                     main: '#f0f0f0'
-                }
+                },
 
             },
+
+
 
         },
         dark: {
@@ -22,7 +24,8 @@ export const theme = extendTheme({
                 },
                 secondary: {
                     main: pink[600],
-                }
+                },
+
 
             },
         },
