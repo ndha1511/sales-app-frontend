@@ -1,5 +1,5 @@
 import {Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
-import DialogCategory from "../../../components/admin/dialogs/DialogCategory.tsx";
+import DialogCreateCategory from "../../../components/admin/dialogs/categories/DialogCreateCategory.tsx";
 import {useState} from "react";
 
 const Provider = () => {
@@ -10,7 +10,7 @@ const Provider = () => {
     return (
         <Box>
             <Button onClick={() => setOpen(true)}>Thêm nhà cung cấp</Button>
-            {open && <DialogCategory open={open} handleClose={handleClose}/>}
+            {open && <DialogCreateCategory open={open} handleClose={handleClose}/>}
             <TableContainer component={Paper}>
                 <Table size="small" aria-label="a dense table">
                     <TableHead>

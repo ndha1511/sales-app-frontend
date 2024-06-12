@@ -1,15 +1,17 @@
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import {useState} from "react";
-import {createCategory} from "../../../services/category.service..ts";
-import {CategoryModel} from "../../../models/category.model.ts";
-import {ResponseSuccess} from "../../../dtos/responses/response.success.ts";
+import {createCategory} from "../../../../services/category.service..ts";
+import {CategoryModel} from "../../../../models/category.model.ts";
+import {ResponseSuccess} from "../../../../dtos/responses/response.success.ts";
 
 type Props = {
     open: boolean;
     handleClose: () => void;
+    addCategory: (category: CategoryModel) => void;
+    showAlert: (status: string, message: string) => void
 }
 
-const DialogCategory = ({open, handleClose}: Props) => {
+const DialogCreateCategory = ({open, handleClose, addCategory, showAlert}: Props) => {
     const [categoryName, setCategoryName] = useState('');
     const [errorText, setErrorText] = useState('');
     const handleSubmit = async () => {
@@ -18,11 +20,12 @@ const DialogCategory = ({open, handleClose}: Props) => {
         } else {
             try {
                 const response: ResponseSuccess<CategoryModel> = await createCategory({categoryName});
-                console.log(response.data);
+                addCategory(response.data);
+                showAlert('success', 'Thêm thành công');
+                handleClose();
             } catch (error) {
-                if (error.response.status === 400) {
-                    setErrorText(error.response.data.errors[0]);
-                }
+                showAlert('error', 'Thêm thất bại');
+                handleClose();
             }
         }
     }
@@ -66,4 +69,4 @@ const DialogCategory = ({open, handleClose}: Props) => {
     )
 }
 
-export default DialogCategory;
+export default DialogCreateCategory;
