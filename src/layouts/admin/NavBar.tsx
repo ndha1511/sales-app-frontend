@@ -6,17 +6,19 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    useMediaQuery,
 } from "@mui/material";
 import {BackupTable, Equalizer, ExpandLess, ExpandMore, Home} from "@mui/icons-material";
 import {pinkGradient, primaryGradient} from "../../theme.tsx";
 import {ReactNode, useState} from "react";
 import {Link, useLocation} from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
 import {blue} from "@mui/material/colors";
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import GroupIcon from '@mui/icons-material/Group';
 import MessageIcon from '@mui/icons-material/Message';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import logoIcon from "../../assets/logo/logo-icon.png";
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 type Item = {
     title: string,
@@ -28,6 +30,8 @@ type Item = {
 const NavBar = () => {
     const [open, setOpen] = useState<{ [key: string]: boolean }>({});
     const location = useLocation();
+    const isMobile: boolean = useMediaQuery('(max-width:600px)');
+
 
     const handleClick = (title: string) => {
         setOpen(prev => ({...prev, [title]: !prev[title]}));
@@ -46,22 +50,22 @@ const NavBar = () => {
             child: [
                 {
                     title: 'Thêm sản phẩm',
-                    icon: <AddIcon fontSize={"small"}/>,
+                    icon: <FiberManualRecordIcon fontSize={"small"} sx={{fontSize: '14px'}}/>,
                     href: '/admin/product/create'
                 },
                 {
                     title: 'Danh sách sản phẩm',
-                    icon: <AddIcon fontSize={"small"}/>,
+                    icon: <FiberManualRecordIcon fontSize={"small"} sx={{fontSize: '14px'}}/>,
                     href: '/admin/product'
                 },
                 {
                     title: 'Loại sản phẩm',
-                    icon: <AddIcon fontSize={"small"}/>,
+                    icon: <FiberManualRecordIcon fontSize={"small"} sx={{fontSize: '14px'}}/>,
                     href: '/admin/product/category'
                 },
                 {
                     title: 'Nhà cung cấp',
-                    icon: <AddIcon fontSize={"small"}/>,
+                    icon: <FiberManualRecordIcon fontSize={"small"} sx={{fontSize: '14px'}}/>,
                     href: '/admin/product/provider'
                 }
             ]
@@ -100,6 +104,7 @@ const NavBar = () => {
             height: '100vh',
             width: '220px',
         }}>
+            {isMobile && <img src={logoIcon} alt={"logo"} width={"55px"} height={"55px"}/>}
             <List
                 sx={{display: 'flex', flexDirection: 'column', width: '100%'}}>
                 {buttonIcon.map((itemIcon: Item, index: number) => {
@@ -128,10 +133,12 @@ const NavBar = () => {
                                 pb: 1
                             }} onClick={() => handleClick(itemIcon.title)}>
                                 <ListItemText primary={itemIcon.title} sx={{width: "50%"}} />
-                                <ListItemIcon sx={{justifyContent: 'center', width: "30%"}}>
+                                <ListItemIcon sx={{justifyContent: 'center', width: "30%",
+                                    color: location.pathname.startsWith(itemIcon.href) ? "#fff" : ""
+                                }}>
                                     {itemIcon.icon}
                                 </ListItemIcon>
-                                <Box sx={{display: 'flex', width: "15%", height: '100%'}}>
+                                <Box sx={{display: 'flex', width: "15%", height: '100%', alignItems: 'center'}}>
                                     {itemIcon.child ? isOpen ? <ExpandLess/> : <ExpandMore/> : <></>}
                                 </Box>
                             </ListItemButton>

@@ -2,6 +2,7 @@ import {
     Box, Pagination,
     Select, Stack,
     Typography,
+    useMediaQuery,
 
 } from "@mui/material";
 import SearchInput from "../../../components/admin/search-input/SearchInput.tsx";
@@ -29,18 +30,19 @@ const rows = [
 ];
 
 const Product = () => {
-    // const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:600px)');
     const navigate = useNavigate();
     const fNavigate = (id: number) => {
         navigate('update/' + id);
     }
 
     return <Box sx={{display: 'flex', flexDirection: 'column', p: 2}}>
-        <Box sx={{display: 'flex', width: '100%', justifyContent: 'flex-end', mb: 2}}>
-            <Typography variant="h6" component="span" sx={{flexGrow: 1}}>Danh sách sản phẩm</Typography>
-            <ButtonGradient sx={{
+        <Box  sx={{display: 'flex', width: '100%', justifyContent: 'flex-end', mb: 2}}>
+            <Typography component="span" sx={{flexGrow: 1}}>Danh sách sản phẩm</Typography>
+            <ButtonGradient size="small" sx={{
                 background: pinkGradient,
-                color: "#fff"
+                color: "#fff",
+                fontSize: 10
             }} onClick={() => navigate("create")}>Thêm sản phẩm <AddIcon/> </ButtonGradient>
         </Box>
         <Box sx={{
@@ -62,7 +64,7 @@ const Product = () => {
             p: 0.5
         }}>
             {rows.map((item: any, index: number) => (
-                <Box sx={{width: '270px'}} key={index}>
+                <Box sx={{width: isMobile ? '150px' : '270px'}} key={index}>
                     <ProductCard
                         productId={item.id}
                         productName={item.name}

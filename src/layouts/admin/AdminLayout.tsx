@@ -14,11 +14,11 @@ const AdminLayout = ({children}: Props) => {
 
     return <Box sx={{display: "flex", flexDirection: "column"}}>
         <Header></Header>
-        <Box sx={{display: "flex", mt: 9,}}>
+        <Box sx={{display: "flex", mt: 9, minHeight: '100vh'}}>
             {isMobile? <></>: <NavBar></NavBar>}
-            <Box sx={{display: 'flex', flexDirection: 'column', flex: 1,  borderLeft: '1px solid #e4e4e4',}}>
+            <Box sx={{display: 'flex', flexDirection: 'column', flex: 1, borderLeft: '1px solid #e4e4e4',}}>
                 <Box sx={{flex: 1}}>{children}</Box>
-                <Box sx={{ height: '200px'}}><Footer></Footer></Box>
+                <Box sx={{ height: '60px'}}><Footer></Footer></Box>
             </Box>
         </Box>
     </Box>

@@ -1,5 +1,5 @@
 import { experimental_extendTheme as extendTheme} from '@mui/material/styles';
-import {pink} from "@mui/material/colors";
+import {green, pink} from "@mui/material/colors";
 
 export const theme = extendTheme({
     colorSchemes: {
@@ -13,9 +13,6 @@ export const theme = extendTheme({
                 },
 
             },
-
-
-
         },
         dark: {
             palette: {
@@ -23,8 +20,11 @@ export const theme = extendTheme({
                     main: pink[400],
                 },
                 secondary: {
-                    main: pink[600],
+                    main: pink[300],
                 },
+                success: {
+                    main: green[600],
+                }
 
 
             },

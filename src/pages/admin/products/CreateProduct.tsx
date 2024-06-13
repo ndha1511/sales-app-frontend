@@ -4,13 +4,38 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
+    Paper,
     Select,
     styled,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     TextField,
-    Typography
+    Typography,
+    useMediaQuery
 } from "@mui/material";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import TableCustom from "../../../components/common/TableCustom.tsx";
+import { useEffect, useState } from "react";
+import { ProviderModel } from "../../../models/provider.model";
+import { CategoryModel } from "../../../models/category.model";
+import { ResponseSuccess } from "../../../dtos/responses/response.success";
+import { getAllProviders } from "../../../services/provider.service";
+import { getAllCategories } from "../../../services/category.service.";
+import { SizeModel } from "../../../models/size.model";
+import { ColorModel } from "../../../models/color.model";
+import { getAllSizes } from "../../../services/size.service";
+import { getAllColors } from "../../../services/color.service";
+import { ProductDetailDto } from "../../../dtos/requests/product-detail.dto";
+import * as yup from 'yup';
+import { ProductDto } from "../../../dtos/requests/product.dto";
+import { useFormik } from "formik";
+import { ProductModel } from "../../../models/product.model";
+import { createProduct } from "../../../services/product.service";
+import { createProductDetail } from "../../../services/product-detail.service";
+
 const VisuallyHiddenInput = styled('input')({
     clipPath: 'inset(50%)',
     height: 1,
@@ -21,89 +46,246 @@ const VisuallyHiddenInput = styled('input')({
     whiteSpace: 'nowrap',
     width: 1,
 });
-type RowData = {
-    name: string,
-    calories: number,
-    fat: number
-}
-const rows: RowData[] = [
-    { name: 'Frozen yoghurt', calories: 159, fat: 6.0},
-    { name: 'Ice cream sandwich', calories: 237, fat: 9.0},
-    { name: 'Eclair', calories: 262, fat: 16.0},
-];
 
-const columns = [
-    { label: 'Name', align: 'left' },
-    { label: 'Calories', align: 'right' },
-    { label: 'Fat', align: 'right' },
-];
+const validationProductSchema = yup.object({
+    productName: yup.string().required('Vui lòng nhập tên sản phẩm'),
+    price: yup.number().min(1, 'Giá phải lớn hơn 0').required('Vui lòng nhập giá'),
+    categoryId: yup.string().required('Vui lòng chọn loại sản phẩm'),
+    providerId: yup.string().required('Vui lòng chọn nhà cung cấp'),
+});
 
+const validationProductDetailSchema = yup.object({
+    colorId: yup.string().required('Vui lòng chọn màu sắc'),
+    sizeId: yup.string().required('Vui lòng chọn kích thước'),
+    quantity: yup.number().min(1, 'Số lượng phải lớn hơn 0').required('Vui lòng nhập số lượng'),
+});
 
 
 const CreateProduct = () => {
+    const [providers, setProviders] = useState<ProviderModel[]>([]);
+    const [categories, setCategories] = useState<CategoryModel[]>([]);
+    const [sizes, setSizes] = useState<SizeModel[]>([]);
+    const [colors, setColors] = useState<ColorModel[]>([]);
+    const isMobile = useMediaQuery('(max-width:600px)');
+    const [productDetailDtos, setProductDetailDtos] = useState<ProductDetailDto[]>([]);
+    const [images, setIamges] = useState<File[]>([]);
+    const [urls, setUrls] = useState<string[]>([]);
+
+    const formik = useFormik({
+        initialValues: {
+            productName: '',
+            price: 0,
+            categoryId: '',
+            providerId: '',
+            description: '',
+        },
+        validationSchema: validationProductSchema,
+        onSubmit: async (values: ProductDto, { resetForm }) => {
+            const formData = new FormData();
+            formData.append('productName', values.productName ? values.productName : '');
+            formData.append('thumbnail', values.thumbnail ? values.thumbnail.toString() : '1');
+            formData.append('price', values.price ? values.price.toString() : '0');
+            formData.append('description', values.description ? values.description : '');
+            formData.append('categoryId', values.categoryId ? values.categoryId.toString() : '0');
+            formData.append('providerId', values.providerId ? values.providerId.toString() : '0');
+            
+            images.forEach((image) => {
+              formData.append(`images`, image, image.name);
+            });
+           
+            const response: ResponseSuccess<ProductModel> = await createProduct(formData);
+            const productId = response.data.id;
+            const productDetails = productDetailDtos.map((dto: ProductDetailDto) => {
+                return {...dto, productId: productId};
+            })
+            for (const productDetailDto of  productDetails) {
+                await createProductDetail(productDetailDto);
+            }
+            
+            resetForm();
+        },
+    });
+
+
+
+    const formikProductDetail = useFormik({
+        initialValues: {
+            sizeId: '',
+            colorId: '',
+            quantity: 0,
+        },
+        validationSchema: validationProductDetailSchema,
+        onSubmit: (values: ProductDetailDto, { resetForm }) => {
+            setProductDetailDtos([...productDetailDtos, values]);
+            resetForm();
+        },
+    });
+
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const responseProvider: ResponseSuccess<ProviderModel[]> = await getAllProviders();
+                setProviders(responseProvider.data);
+                const responseCategory: ResponseSuccess<CategoryModel[]> = await getAllCategories();
+                setCategories(responseCategory.data);
+                const responseSizes: ResponseSuccess<SizeModel[]> = await getAllSizes();
+                setSizes(responseSizes.data);
+                const responseColors: ResponseSuccess<ColorModel[]> = await getAllColors();
+                setColors(responseColors.data);
+            } catch (error) {
+                console.log(error);
+            }
+        })();
+    }, []);
+
+    const handleChangeImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            setIamges([...images, ...Array.from(files)]);
+            const imageUrls = Array.from(files).map(file => URL.createObjectURL(file));
+            setUrls(prev => [...prev, ...imageUrls]);
+        }
+    }
+
+    const addProductDetail = () => {
+        formikProductDetail.handleSubmit();
+    }
+
+    const handleSubmit = () => {
+        formik.handleSubmit();
+    }
+
+
     return <Box
         component="form"
         sx={{
-            '& .MuiTextField-root': {m: 1, width: '25ch'},
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
             p: 2
         }}
         noValidate
         autoComplete="off"
     >
-        <Typography variant="h6" component="span" sx={{flexGrow: 1}}>
+        <Typography component="span" sx={{ flexGrow: 1 }}>
             Thêm sản phẩm
         </Typography>
-        <Box sx={{mt: 2}}>
-            <Typography component="span" sx={{flexGrow: 1, pl: 3}}>
+
+        <Box sx={{ mt: 2, }}>
+
+            <Typography component="span" sx={{ flexGrow: 1, pl: 3 }}>
                 Thông tin sản phẩm
             </Typography>
-            <Box sx={{p: 2}}>
+            <Box sx={{
+                p: 2,
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '20px'
+            }}>
                 <TextField
+                    sx={{
+                        flexBasis: '200px',
+                        display: 'flex',
+                        flexGrow: 1
+                    }}
                     id="product-name"
                     label="Tên sản phẩm"
+                    name="productName"
+                    value={formik.values.productName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.productName && Boolean(formik.errors.productName)}
+                    helperText={formik.touched.productName && formik.errors.productName}
                 />
                 <TextField
+                    sx={{
+                        flexBasis: '200px',
+                        display: 'flex',
+                        flexGrow: 1
+                    }}
                     id="product-price"
                     label="Giá"
                     type="number"
-
+                    name="price"
+                    value={formik.values.price}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.price && Boolean(formik.errors.price)}
+                    helperText={formik.touched.price && formik.errors.price}
                 />
             </Box>
-            <Box sx={{p: 2, pl: 3, display: 'flex', justifyContent: 'space-between'}}>
-                <FormControl sx={{width: '40%'}}>
-                    <InputLabel id="demo-simple-select-label">Loại sản phẩm</InputLabel>
+            <Box sx={{
+                p: 2, pl: 3, display: 'flex',
+                flexWrap: 'wrap',
+                gap: '20px'
+
+            }}>
+                <FormControl sx={{
+                    flexBasis: '200px',
+                    display: 'flex',
+                    flexGrow: 1
+                }}>
+                    <InputLabel id="categories">Loại sản phẩm</InputLabel>
                     <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
+                        labelId="categories"
+                        id="categories"
                         label="Loại sản phẩm"
+                        name="categoryId"
+                        value={formik.values.categoryId}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.categoryId && Boolean(formik.errors.categoryId)}
                     >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        {categories.map((category: CategoryModel) => (
+                            <MenuItem key={category.id} value={category.id}>{category.categoryName}</MenuItem>
+                        ))}
                     </Select>
+                    {formik.touched.categoryId && formik.errors.categoryId && (
+                        <Typography color="error">{formik.errors.categoryId}</Typography>
+                    )}
                 </FormControl>
-                <FormControl sx={{width: '40%'}}>
-                    <InputLabel id="demo-simple-select-label">Nhà cung cấp</InputLabel>
+                <FormControl sx={{
+                    flexBasis: '200px',
+                    display: 'flex',
+                    flexGrow: 1
+                }}>
+                    <InputLabel id="providers">Nhà cung cấp</InputLabel>
                     <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
+                        labelId="providers"
+                        id="providers"
                         label="Nhà cung cấp"
+                        name="providerId"
+                        value={formik.values.providerId}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.providerId && Boolean(formik.errors.providerId)}
                     >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        {providers.map((provider: ProviderModel) => (
+                            <MenuItem key={provider.id} value={provider.id}>{provider.providerName}</MenuItem>
+                        ))}
                     </Select>
+                    {formik.touched.providerId && formik.errors.providerId && (
+                        <Typography color="error">{formik.errors.providerId}</Typography>
+                    )}
                 </FormControl>
             </Box>
-            <Box sx={{p: 2}}>
+            <Box sx={{ p: 2, display: 'flex' }}>
                 <TextField
+                    sx={{
+                        flexBasis: '200px',
+                        display: 'flex',
+                        flexGrow: 1
+                    }}
                     id="outlined-multiline-static"
                     label="Mô tả"
+                    name="description"
+                    value={formik.values.description}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     multiline
                     rows={4}
                 />
             </Box>
-            <Box sx={{p: 2, pl: 3}}>
+            <Box sx={{ p: 2, pl: 3 }}>
                 <Button
                     component="label"
                     role={undefined}
@@ -112,57 +294,153 @@ const CreateProduct = () => {
                     startIcon={<CloudUploadIcon />}
                 >
                     Upload ảnh
-                    <VisuallyHiddenInput type="file" accept={"image/*"}/>
+                    <VisuallyHiddenInput type="file" accept={"image/*"} multiple onChange={handleChangeImages} />
                 </Button>
             </Box>
-            <Box>
-                List images
+            <Box sx={{
+                display: 'flex',
+                p: 2,
+                flexWrap: 'wrap',
+                gap: 12
+            }}>
+                {urls.map((url: string, index: number) => (
+                    <img src={url} alt="test" key={index} style={{
+                        flexBasis: '100px',
+                        maxWidth: '200px',
+                        flexGrow: 1
+                    }}/>
+                ))}
             </Box>
         </Box>
-        <Box sx={{mt: 2}}>
-            <Typography component="span" sx={{flexGrow: 1, pl: 3}}>
+        <Box sx={{ mt: 2 }}>
+            <Typography component="span" sx={{ flexGrow: 1, pl: 3 }}>
                 Chi tiết sản phẩm
             </Typography>
-            <Box sx={{p: 2, pl: 3, display: 'flex', justifyContent: 'space-between'}}>
-                <FormControl sx={{width: '40%'}}>
-                    <InputLabel id="demo-simple-select-label">Màu sắc</InputLabel>
+            <Box sx={{
+                p: 2, pl: 3, display: 'flex',
+                flexWrap: 'wrap',
+                gap: '20px'
+
+            }}>
+                <FormControl sx={{
+                    flexBasis: '200px',
+                    display: 'flex',
+                    flexGrow: 1
+                }}>
+                    <InputLabel id="colors">Màu sắc</InputLabel>
                     <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
+                        labelId="colors"
+                        id="colors"
                         label="Màu sắc"
+                        name="colorId"
+                        value={formikProductDetail.values.colorId}
+                        onChange={formikProductDetail.handleChange}
+                        onBlur={formikProductDetail.handleBlur}
+                        error={formikProductDetail.touched.colorId && Boolean(formikProductDetail.errors.colorId)}
                     >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        {colors.map((color: ColorModel) => (
+                            <MenuItem key={color.id} value={color.id}>{color.colorName}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
-                <FormControl sx={{width: '40%'}}>
-                    <InputLabel id="demo-simple-select-label">Kích thước</InputLabel>
+                <FormControl sx={{
+                    flexBasis: '200px',
+                    display: 'flex',
+                    flexGrow: 1
+                }}>
+                    <InputLabel id="sizes">Kích thước</InputLabel>
                     <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
+                        labelId="sizes"
+                        id="sizes"
                         label="Kích thước"
+                        name="sizeId"
+                        value={formikProductDetail.values.sizeId}
+                        onChange={formikProductDetail.handleChange}
+                        onBlur={formikProductDetail.handleBlur}
+                        error={formikProductDetail.touched.sizeId && Boolean(formikProductDetail.errors.sizeId)}
                     >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        {sizes.map((size: SizeModel) => (
+                            <MenuItem key={size.id} value={size.id}>{size.textSize ?? size.numberSize}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
             </Box>
-            <Box sx={{p: 2}}>
+            <Box sx={{
+                p: 2, display: 'flex',
+                flexWrap: 'wrap',
+                gap: '20px'
+            }}>
                 <TextField
+                    sx={{ flex: 1 }}
                     id="product-price"
                     label="Số lượng"
                     type="number"
-
+                    name="quantity"
+                    value={formikProductDetail.values.quantity}
+                    onChange={formikProductDetail.handleChange}
+                    onBlur={formikProductDetail.handleBlur}
+                    error={formikProductDetail.touched.quantity && Boolean(formikProductDetail.errors.quantity)}
+                    helperText={formikProductDetail.touched.quantity && formikProductDetail.errors.quantity}
                 />
             </Box>
-            <Box>
-                <Button>Thêm</Button>
+            <Box sx={{ p: 2, pl: 3 }}>
+                <Button variant="contained" onClick={addProductDetail}>Thêm</Button>
             </Box>
-            <Box>
-                <TableCustom columns={columns} rows={rows}/>
-            </Box>
+
+            <TableContainer component={Paper} sx={{ p: 2 }}>
+                <Table size={isMobile ? 'small' : 'medium'} aria-label="a dense table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell >Màu sắc</TableCell>
+                            <TableCell >Kích thước</TableCell>
+                            <TableCell >Số lượng</TableCell>
+                            <TableCell align="center">Thao tác</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {productDetailDtos.map((productDetailDto: ProductDetailDto, index: number) => (
+                            <TableRow key={index} sx={{
+                                ':hover': {
+                                    backgroundColor: 'secondary.main'
+                                }
+                            }}>
+                                <TableCell >{colors.filter(color => productDetailDto.colorId === color.id)[0].colorName}</TableCell>
+                                <TableCell >{sizes.filter(size => productDetailDto.sizeId === size.id)[0].numberSize ??
+                                    sizes.filter(size => productDetailDto.sizeId === size.id)[0].textSize
+                                }</TableCell>
+                                <TableCell>{productDetailDto.quantity}</TableCell>
+                                <TableCell align="center">
+                                    <Button sx={{
+                                        width: '70px',
+                                        height: '20px',
+                                        fontSize: '9px',
+                                        fontWeight: 'bold',
+                                        textTransform: 'none',
+                                        ml: 1
+                                    }} color={'success'} variant="contained" onClick={() => {
+
+                                    }}>Cập nhật</Button>
+                                    <Button sx={{
+                                        width: '70px',
+                                        height: '20px',
+                                        fontSize: '9px',
+                                        fontWeight: 'bold',
+                                        textTransform: 'none',
+                                        ml: 1
+                                    }} className="btn-action-table" variant="contained" color="error" onClick={() => {
+
+                                    }} >Xóa</Button>
+                                </TableCell>
+
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+                variant="contained" color="success" onClick={handleSubmit}>Hoàn tất</Button>
         </Box>
     </Box>
 }

@@ -9,3 +9,25 @@
   padding: 0;
 }
 
+/* Tùy chỉnh toàn bộ thanh cuộn */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Tùy chỉnh thanh cuộn dọc */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Tùy chỉnh thanh trượt (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #cbc7c7;
+  border-radius: 5px;
+}
+
+/* Tùy chỉnh thanh trượt khi hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+
