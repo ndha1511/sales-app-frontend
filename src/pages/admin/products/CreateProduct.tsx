@@ -1,7 +1,10 @@
 import {
+    Backdrop,
     Box,
     Button,
+    CircularProgress,
     FormControl,
+    ImageList,
     InputLabel,
     MenuItem,
     Paper,
@@ -35,6 +38,8 @@ import { useFormik } from "formik";
 import { ProductModel } from "../../../models/product.model";
 import { createProduct } from "../../../services/product.service";
 import { createProductDetail } from "../../../services/product-detail.service";
+import ProductImage from "../../../components/admin/products/ProductImage";
+import AlertCustom from "../../../components/common/AlertCustom";
 
 const VisuallyHiddenInput = styled('input')({
     clipPath: 'inset(50%)',
@@ -70,6 +75,14 @@ const CreateProduct = () => {
     const [productDetailDtos, setProductDetailDtos] = useState<ProductDetailDto[]>([]);
     const [images, setIamges] = useState<File[]>([]);
     const [urls, setUrls] = useState<string[]>([]);
+    const [thumbnail, setThumbnail] = useState<number>(0);
+    const [openAlert, setOpenAlert] = useState({
+        show: false,
+        status: '',
+        message: ''
+    });
+
+    const [openBackdrop, setOpenBackdrop] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -81,28 +94,52 @@ const CreateProduct = () => {
         },
         validationSchema: validationProductSchema,
         onSubmit: async (values: ProductDto, { resetForm }) => {
+            setOpenBackdrop(true);
             const formData = new FormData();
             formData.append('productName', values.productName ? values.productName : '');
-            formData.append('thumbnail', values.thumbnail ? values.thumbnail.toString() : '1');
+            formData.append('thumbnail', thumbnail.toString());
             formData.append('price', values.price ? values.price.toString() : '0');
             formData.append('description', values.description ? values.description : '');
             formData.append('categoryId', values.categoryId ? values.categoryId.toString() : '0');
             formData.append('providerId', values.providerId ? values.providerId.toString() : '0');
-            
+
             images.forEach((image) => {
-              formData.append(`images`, image, image.name);
+                formData.append(`images`, image, image.name);
             });
-           
-            const response: ResponseSuccess<ProductModel> = await createProduct(formData);
-            const productId = response.data.id;
-            const productDetails = productDetailDtos.map((dto: ProductDetailDto) => {
-                return {...dto, productId: productId};
-            })
-            for (const productDetailDto of  productDetails) {
-                await createProductDetail(productDetailDto);
+
+            try {
+                const response: ResponseSuccess<ProductModel> = await createProduct(formData);
+                const productId = response.data.id;
+                const productDetails = productDetailDtos.map((dto: ProductDetailDto) => {
+                    return { ...dto, productId: productId };
+                })
+                for (const productDetailDto of productDetails) {
+                    await createProductDetail(productDetailDto);
+                }
+
+                resetForm();
+                setIamges([]);
+                setUrls([]);
+                setProductDetailDtos([]);
+                setOpenBackdrop(false);
+                setOpenAlert(
+                    {
+                        show: true,
+                        status: 'success',
+                        message: 'Thêm sản phẩm thành công'
+                    }
+                )
+            } catch (error) {
+                setOpenBackdrop(false);
+                setOpenAlert(
+                    {
+                        show: true,
+                        status: 'error',
+                        message: 'Thêm sản thất bại'
+                    }
+                )
+                console.log(error);
             }
-            
-            resetForm();
         },
     });
 
@@ -116,10 +153,28 @@ const CreateProduct = () => {
         },
         validationSchema: validationProductDetailSchema,
         onSubmit: (values: ProductDetailDto, { resetForm }) => {
-            setProductDetailDtos([...productDetailDtos, values]);
+
+            setProductDetailDtos(prev => {
+                const productDto: ProductDetailDto | undefined = prev.find((dto: ProductDetailDto) => {
+                    return dto.sizeId === values.sizeId && dto.colorId === values.colorId;
+                });
+                if (productDto) {
+                    productDto.quantity = (productDto?.quantity ?? 0) + (values?.quantity ?? 0);
+                } else {
+                    prev.push(values);
+                }
+                return prev;
+            });
             resetForm();
         },
     });
+
+    const deleteProductDetail = (productDetailDto: ProductDetailDto) => {
+        setProductDetailDtos(prev => {
+            const newPrev = prev.filter((dto: ProductDetailDto) => dto !== productDetailDto);
+            return newPrev;
+        })
+    }
 
 
     useEffect(() => {
@@ -156,6 +211,31 @@ const CreateProduct = () => {
         formik.handleSubmit();
     }
 
+    const removeImage = (index: number) => {
+        setUrls(prev => {
+            const newUrls = prev.filter(url => url !== prev[index]);
+            return newUrls;
+        });
+        setIamges(prev => {
+            const newImages = prev.filter(img => img !== prev[index]);
+            return newImages;
+        });
+    }
+
+    const setThumbnailImage = (index: number) => {
+        setThumbnail(index);
+    }
+
+    const colseAlert = () => {
+        setOpenAlert(
+            {
+                show: false,
+                status: '',
+                message: ''
+            }
+        )
+    }
+
 
     return <Box
         component="form"
@@ -166,6 +246,13 @@ const CreateProduct = () => {
         noValidate
         autoComplete="off"
     >
+        {openAlert.show && <AlertCustom alert={openAlert} colseAlert={colseAlert} />}
+        {openBackdrop && <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={openBackdrop}
+        >
+            <CircularProgress color="inherit" />
+        </Backdrop>}
         <Typography component="span" sx={{ flexGrow: 1 }}>
             Thêm sản phẩm
         </Typography>
@@ -303,13 +390,15 @@ const CreateProduct = () => {
                 flexWrap: 'wrap',
                 gap: 12
             }}>
-                {urls.map((url: string, index: number) => (
-                    <img src={url} alt="test" key={index} style={{
-                        flexBasis: '100px',
-                        maxWidth: '200px',
-                        flexGrow: 1
-                    }}/>
-                ))}
+                <ImageList cols={isMobile ? 2 : 4}>
+                    {urls.map((url: string, index: number) => (
+                        <ProductImage key={index} url={url} index={index}
+                            removeImage={removeImage}
+                            setThumbnailImage={setThumbnailImage}
+                            isThumbnail={index === thumbnail}
+                        />
+                    ))}
+                </ImageList>
             </Box>
         </Box>
         <Box sx={{ mt: 2 }}>
@@ -416,19 +505,8 @@ const CreateProduct = () => {
                                         fontSize: '9px',
                                         fontWeight: 'bold',
                                         textTransform: 'none',
-                                        ml: 1
-                                    }} color={'success'} variant="contained" onClick={() => {
-
-                                    }}>Cập nhật</Button>
-                                    <Button sx={{
-                                        width: '70px',
-                                        height: '20px',
-                                        fontSize: '9px',
-                                        fontWeight: 'bold',
-                                        textTransform: 'none',
-                                        ml: 1
                                     }} className="btn-action-table" variant="contained" color="error" onClick={() => {
-
+                                        deleteProductDetail(productDetailDto)
                                     }} >Xóa</Button>
                                 </TableCell>
 

@@ -11,23 +11,12 @@ import {pinkGradient} from "../../../theme.tsx";
 import AddIcon from '@mui/icons-material/Add';
 import {useNavigate} from "react-router-dom";
 import ProductCard from "../../../components/admin/cards/ProductCard.tsx";
+import { useEffect, useState } from "react";
+import { ProductDetailModel } from "../../../models/product-detail.model.ts";
+import { getAllProducts } from "../../../services/product.service.ts";
+import { ResponseSuccess } from "../../../dtos/responses/response.success.ts";
+import { ProductModel } from "../../../models/product.model.ts";
 
-
-
-function createData(id: number, name: string, price: number) {
-    return {id, name, price};
-}
-
-const rows = [
-    createData(1, 'Frozen yoghurt', 159),
-    createData(2, 'Frozen yoghurt 1', 159),
-    createData(3, 'Frozen yoghurt 2', 159),
-    createData(4, 'Frozen yoghurt 2', 159),
-    createData(5, 'Frozen yoghurt 2', 159),
-    createData(6, 'Frozen yoghurt 2', 159),
-    createData(7, 'Frozen yoghurt 2', 159),
-
-];
 
 const Product = () => {
     const isMobile = useMediaQuery('(max-width:600px)');
@@ -35,6 +24,18 @@ const Product = () => {
     const fNavigate = (id: number) => {
         navigate('update/' + id);
     }
+    const [products, setProducts] = useState<ProductDetailModel[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const response: ResponseSuccess<ProductDetailModel[]> = await getAllProducts();
+                setProducts(response.data);
+            } catch (e) {
+                console.log(e);
+            }
+        })();
+    }, []);
 
     return <Box sx={{display: 'flex', flexDirection: 'column', p: 2}}>
         <Box  sx={{display: 'flex', width: '100%', justifyContent: 'flex-end', mb: 2}}>
@@ -63,13 +64,14 @@ const Product = () => {
             justifyContent: 'center',
             p: 0.5
         }}>
-            {rows.map((item: any, index: number) => (
+            {products.map((item: ProductModel, index: number) => (
                 <Box sx={{width: isMobile ? '150px' : '270px'}} key={index}>
                     <ProductCard
-                        productId={item.id}
-                        productName={item.name}
-                        productPrice={item.price}
+                        productId={item.id ?? 0}
+                        productName={item.productName ?? ''}
+                        productPrice={item.price ?? 0}
                         fNavigate={fNavigate}
+                        thumbnail={item.thumbnail ?? ''}
                     />
                 </Box>
             ))}

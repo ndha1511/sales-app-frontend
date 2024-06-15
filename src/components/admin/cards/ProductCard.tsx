@@ -7,10 +7,11 @@ type Props = {
     productName: string,
     productPrice: number,
     fNavigate: (id: number) => void;
+    thumbnail: string;
 
 }
 
-const ProductCard = ({ productId, productName, productPrice, fNavigate }: Props) => {
+const ProductCard = ({ productId, productName, productPrice, fNavigate, thumbnail }: Props) => {
     const isMobile = useMediaQuery('(max-width:600px)');
     return (
         <Card sx={{ maxWidth: 345 }}>
@@ -18,7 +19,7 @@ const ProductCard = ({ productId, productName, productPrice, fNavigate }: Props)
             <CardMedia
                 component="img"
                 height={isMobile ? '150px': '200px'}
-                image="https://static.vecteezy.com/system/resources/thumbnails/013/078/569/small/illustration-of-cute-colored-cat-cartoon-cat-image-in-format-suitable-for-children-s-book-design-elements-introduction-of-cats-to-children-books-or-posters-about-animal-free-png.png"
+                image={thumbnail}
                 alt="green iguana"
             />
             <CardContent>

@@ -1,8 +1,7 @@
 import {
-    Alert,
     Box,
     Button,
-    Paper, Snackbar,
+    Paper,
     Table,
     TableBody,
     TableCell,
@@ -25,6 +24,7 @@ import { pinkGradient } from "../../../theme.tsx";
 import AddIcon from '@mui/icons-material/Add';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Status } from "../../../models/enums/status.enum.ts";
+import AlertCustom from "../../../components/common/AlertCustom.tsx";
 
 
 const Category = () => {
@@ -74,6 +74,16 @@ const Category = () => {
         });
     }
 
+    const colseAlert = () => {
+        setOpenAlert(
+            {
+                show: false,
+                status: '',
+                message: ''
+            }
+        )
+    }
+
     const deleteCategory = (category: CategoryModel) => {
         setCategories(prev => prev.filter((item) => item.id !== category.id));
     }
@@ -102,21 +112,7 @@ const Category = () => {
             {openUpdate && <DialogUpdateCategory showAlert={showAlert} updateCategory={updateCategory} open={openUpdate} handleClose={handleCloseUpdate} category={category} />}
             {openDelete && <DialogDeleteCategory showAlert={showAlert} open={openDelete} handleClose={handleCloseDelete} category={category} deleteCategory={deleteCategory} />}
             {open && <DialogCreateCategory showAlert={showAlert} addCategory={addCategory} open={open} handleClose={handleClose} />}
-            {openAlert.show && <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                open={openAlert.show} autoHideDuration={3000} onClose={() => setOpenAlert({
-                    show: false,
-                    status: '',
-                    message: ''
-                })}>
-                <Alert
-                    severity={openAlert.status === 'success' ? 'success' : 'error'}
-                    variant="filled"
-                    sx={{ width: '100%' }}
-                >
-                    {openAlert.message}
-                </Alert>
-            </Snackbar>}
+            {openAlert.show && <AlertCustom alert={openAlert} colseAlert={colseAlert}/>}
             <TableContainer component={Paper}>
                 <Table size={isMobile ? 'small' : 'medium'} aria-label="a dense table">
                     <TableHead>

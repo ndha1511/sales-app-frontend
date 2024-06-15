@@ -15,3 +15,18 @@ export const createProduct = async (productDto: FormData): Promise<ResponseSucce
         return Promise.reject(error);
     }
 }
+
+
+export const getAllProducts = async (): Promise<ResponseSuccess<ProductModel[]>> => {
+    try {
+        const response = await requestConfig(
+            'products',
+            Method.GET,
+            [],
+            ContentType.JSON
+        );
+        return response.data;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
