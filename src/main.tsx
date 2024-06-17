@@ -12,6 +12,8 @@ import CreateProduct from "./pages/admin/products/CreateProduct.tsx";
 import UpdateProduct from "./pages/admin/products/UpdateProduct.tsx";
 import Category from "./pages/admin/categories/Category.tsx";
 import Provider from './pages/admin/providers/Provider.tsx';
+import UserLayout from './layouts/user/UserLayout.tsx';
+import Home from './layouts/user/Home.tsx';
 
 const router = createBrowserRouter([
     {
@@ -37,6 +39,10 @@ const router = createBrowserRouter([
     {
         path: '/admin/product/provider',
         element: <AdminLayout><Provider/></AdminLayout>
+    },
+    {
+        path: '/',
+        element: <UserLayout><Home/></UserLayout>
     },
 ]);
 

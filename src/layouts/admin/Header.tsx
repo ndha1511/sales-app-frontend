@@ -12,11 +12,12 @@ import {Notifications} from "@mui/icons-material";
 import IconButtonGradient from "../../components/common/IconButtonGradient.tsx";
 import logoIcon from "../../assets/logo/logo-icon.png";
 import {useState} from "react";
-import NavBar from "./NavBar.tsx";
+import NavBar from "../common/NavBar.tsx";
 import SearchInput from "../../components/admin/search-input/SearchInput.tsx";
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Tooltip from '@mui/material/Tooltip';
+import { adminMenu } from "../common/Menu.tsx";
 
 
 const Header = () => {
@@ -28,7 +29,7 @@ const Header = () => {
     };
 
     const DrawerList = (
-        <NavBar></NavBar>
+        <NavBar items={adminMenu}></NavBar>
     );
 
     return <AppBar sx={{
