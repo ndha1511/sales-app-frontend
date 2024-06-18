@@ -9,9 +9,9 @@ type Props = {
 
 const UserLayout = ({ children }: Props) => {
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", height: '100vh', width: '100wh' }}>
-            <Box sx={{width: '100%'}}><Header /></Box>
-            <Box sx={{flex: 1, marginTop: '100px'}}>
+        <Box sx={{ display: "flex", flexDirection: "column", minHeight: '100vh'}}>
+            <Box><Header /></Box>
+            <Box sx={{flex: 1, marginTop: '85px'}}>
                 {children}
             </Box>
             <Box sx={{ height: '60px'}}><Footer></Footer></Box>

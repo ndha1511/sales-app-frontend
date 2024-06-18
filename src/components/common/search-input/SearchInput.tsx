@@ -1,4 +1,4 @@
-import {Box, Input} from "@mui/material";
+import {Box, Input, Tooltip} from "@mui/material";
 import IconButtonGradient from "../../common/IconButtonGradient.tsx";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -12,9 +12,11 @@ const SearchInput = ({placeHolder}: Props) => {
             sx={{flex: 1}}
             placeholder={placeHolder}
         />
+        <Tooltip title="Tìm kiếm">
         <IconButtonGradient type="button" aria-label="search">
             <SearchIcon/>
         </IconButtonGradient>
+        </Tooltip>
     </Box>
 }
 export default SearchInput;

@@ -5,7 +5,7 @@ import {
     useMediaQuery,
 
 } from "@mui/material";
-import SearchInput from "../../../components/admin/search-input/SearchInput.tsx";
+import SearchInput from "../../../components/common/search-input/SearchInput.tsx";
 import ButtonGradient from "../../../components/common/ButtonGradient.tsx";
 import {pinkGradient} from "../../../theme.tsx";
 import AddIcon from '@mui/icons-material/Add';

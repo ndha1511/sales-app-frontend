@@ -1,5 +1,5 @@
 import { AppBar, Badge, Box, Drawer, ListItemButton, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import SearchInput from "../../components/admin/search-input/SearchInput";
+import SearchInput from "../../components/common/search-input/SearchInput";
 import IconButtonGradient from "../../components/common/IconButtonGradient";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { Notifications } from "@mui/icons-material";
@@ -29,37 +29,38 @@ const Header = () => {
 
 
     return (
-        <AppBar variant="outlined" color="secondary" sx={{
+        <AppBar elevation={0} color="secondary" sx={{
             display: 'flex',
             width: '100%',
             gap: '60px',
             alignItems: 'center',
             flexDirection: 'row',
             padding: '10px',
-            pl: isMobile ? 1 : 6, 
-            pr: isMobile ? 2 : 6
+            pl: isMobile ? 1 : 6,
+            pr: isMobile ? 2 : 6,
+            backgroundColor: "background.paper"
         }}>
-        
-            <Box sx={{flex: isMobile ? 1 : '', display: 'flex', alignItems: 'center'}}>
-            {isMedium || isMobile ?  <Box>
-                <IconButtonGradient onClick={toggleDrawer(true)}>
-                    <MenuIcon/>
-                </IconButtonGradient>
-                <Drawer open={open} onClose={toggleDrawer(false)}>
-                    {DrawerList}
-                </Drawer>
-            </Box> : <></>}
-            <img src={logoIcon} alt={"logo"} width={"55px"} height={"55px"}/>
+
+            <Box sx={{ flex: isMobile ? 1 : '', display: 'flex', alignItems: 'center' }}>
+                {isMedium || isMobile ? <Box>
+                    <IconButtonGradient onClick={toggleDrawer(true)}>
+                        <MenuIcon />
+                    </IconButtonGradient>
+                    <Drawer open={open} onClose={toggleDrawer(false)}>
+                        {DrawerList}
+                    </Drawer>
+                </Box> : <></>}
+                <img src={logoIcon} alt={"logo"} width={"55px"} height={"55px"} />
             </Box>
-            {!isMobile && !isMedium ?  <Box sx={{
+            {!isMobile && !isMedium ? <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
                 gap: '10px',
                 alignItems: 'center',
                 padding: '10px',
             }}>
-                {userMenu.map((item: any) => (
-                    <ListItemButton component={Link} to={item.href} sx={{
+                {userMenu.map((item: any, index: number) => (
+                    <ListItemButton key={index} component={Link} to={item.href} sx={{
                         display: "flex",
                         ':hover': {
                             background: primaryGradient,
@@ -69,7 +70,7 @@ const Header = () => {
                         color: location.pathname.startsWith(item.href) ? 'white' : 'none',
                         textDecoration: 'none',
                         pl: 1, pr: 1,
-                        
+
                     }}>
                         <Typography>{item.title}</Typography>
                     </ListItemButton>
@@ -85,22 +86,20 @@ const Header = () => {
                 <Tooltip title="giỏ hàng">
                     <IconButtonGradient>
                         <Badge badgeContent={4} color="primary">
-                            <ShoppingCartIcon fontSize="small"/>
+                            <ShoppingCartIcon fontSize="small" />
                         </Badge>
                     </IconButtonGradient>
                 </Tooltip>
                 <Tooltip title="thông báo">
                     <IconButtonGradient>
                         <Badge badgeContent={4} color="primary">
-                            <Notifications fontSize="small"/>
+                            <Notifications fontSize="small" />
                         </Badge>
                     </IconButtonGradient>
                 </Tooltip>
                 <Tooltip title="tài khoản">
                     <IconButtonGradient>
-                        <Badge badgeContent={4} color="primary">
-                            <AccountCircleIcon fontSize="small"/>
-                        </Badge>
+                        <AccountCircleIcon/>
                     </IconButtonGradient>
                 </Tooltip>
             </Box>
