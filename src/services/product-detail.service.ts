@@ -16,3 +16,4 @@ export const createProductDetail = async (productDetailDto: ProductDetailDto): P
         return Promise.reject(error);
     }
 }
+

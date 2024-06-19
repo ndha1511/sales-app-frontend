@@ -73,6 +73,16 @@ export const userMenu = [
     {
         title: 'Sản phẩm',
         href: '/products',
+        child: [
+            {
+                title: 'Sản phẩm mới',
+                href: '/products/new',
+            },
+            {
+                title: 'Sản phẩm bán chạy',
+                href: '/products/hot',
+            }
+        ]
     },
     {
         title: 'Khuyến mãi',

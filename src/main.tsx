@@ -13,7 +13,9 @@ import UpdateProduct from "./pages/admin/products/UpdateProduct.tsx";
 import Category from "./pages/admin/categories/Category.tsx";
 import Provider from './pages/admin/providers/Provider.tsx';
 import UserLayout from './layouts/user/UserLayout.tsx';
-import Home from './layouts/user/Home.tsx';
+import Home from './pages/user/home/Home.tsx';
+import ProductDetail from './pages/user/product/ProductDetail.tsx';
+
 
 const router = createBrowserRouter([
     {
@@ -43,6 +45,10 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <UserLayout><Home/></UserLayout>
+    },
+    {
+        path: '/products/:id',
+        element: <UserLayout><ProductDetail/></UserLayout>
     },
 ]);
 

@@ -5,7 +5,7 @@ import { SizeModel } from "./size.model";
 export type ProductDetailModel = {
     id?: number,
     product?: ProductModel;
-    size?: SizeModel;
-    color?: ColorModel;
+    size: SizeModel;
+    color: ColorModel;
     quantity?: number;
 }

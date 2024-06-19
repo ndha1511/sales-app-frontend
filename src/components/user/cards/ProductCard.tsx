@@ -1,7 +1,14 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography, useMediaQuery } from "@mui/material";
+import { ProductModel } from "../../../models/product.model";
+import { useNavigate } from "react-router-dom";
 
-const ProductCard = () => {
+type Props = {
+    product: ProductModel
+}
+
+const ProductCard = ({product} : Props) => {
     const isMobile: boolean = useMediaQuery('(max-width:600px)');
+    const navigate = useNavigate();
     return (
         <Card sx={{ width: '100%', position: 'relative', cursor: 'pointer',
             transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
@@ -9,7 +16,7 @@ const ProductCard = () => {
                 transform: 'scale(1.05)',
                 boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
             }
-         }}>
+         }} onClick={() => navigate('/products/' + product.id)}>
             <Box sx={{
                 position: 'absolute',
                 top: 0,
@@ -18,36 +25,49 @@ const ProductCard = () => {
                 p: 1,
                 borderRadius: '0px 0px 0px 5px'
             }}>
-                <Typography>Sale off 40%</Typography>
+                <Typography sx={{
+                    color: '#fff',
+                    fontSize: isMobile? '8px' : '18px'
+                }}>Sale off 40%</Typography>
             </Box>
             <CardMedia
                 component="img"
-                height={isMobile ? "200" : "250"}
+                height={isMobile ? "160" : "250"}
                 width={'100%'}
-                image="https://th-thumbnailer.cdn-si-edu.com/ii_ZQzqzZgBKT6z9DVNhfPhZe5g=/fit-in/1600x0/filters:focal(1061x707:1062x708)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer_public/55/95/55958815-3a8a-4032-ac7a-ff8c8ec8898a/gettyimages-1067956982.jpg"
-                alt="green iguana"
+                image={product?.thumbnail ?? ''}
+                alt={product?.productName ?? ''}
             />
-            <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                    Lizard
+            <CardContent sx={{mb: 0, pb: 0}}>
+                <Typography gutterBottom sx={{
+                    fontSize: isMobile? '12px' : '18px'
+                }}>
+                    {product?.productName ?? ''}
                 </Typography>
                 <Box sx={{
                     display: 'flex',
                     gap: '20px',
                     alignItems: 'center'
                 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{
-                        textDecoration: 'line-through'
+                    <Typography color="text.secondary" sx={{
+                        textDecoration: 'line-through',
+                        fontSize: isMobile ? '8px' : '16px'
                     }}>
                         1.500.000 đ
                     </Typography>
-                    <Typography variant="body2">
+                    <Typography sx={{
+                        fontSize: isMobile? '8px' : '16px'
+                    }}>
                         1.000.000 đ
                     </Typography>
                 </Box>
             </CardContent>
-            <CardActions>
-                <Button size="small" color="primary">
+            <CardActions sx={{
+                mt: 0,
+                pt: 0
+            }}>
+                <Button size="small" color="primary" sx={{
+                    fontSize: isMobile? '8px' : '16px'
+                }}>
                     Thêm vào giỏ hàng
                 </Button>
             </CardActions>

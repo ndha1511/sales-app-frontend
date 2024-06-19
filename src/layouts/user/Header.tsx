@@ -2,7 +2,7 @@ import { AppBar, Badge, Box, Drawer, ListItemButton, Tooltip, Typography, useMed
 import SearchInput from "../../components/common/search-input/SearchInput";
 import IconButtonGradient from "../../components/common/IconButtonGradient";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Notifications } from "@mui/icons-material";
+import { ExpandLess, ExpandMore, Notifications } from "@mui/icons-material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Link, useLocation } from "react-router-dom";
 import { primaryGradient } from "../../theme";
@@ -19,8 +19,12 @@ const Header = () => {
     const isMobile: boolean = useMediaQuery('(max-width:600px)');
     const isMedium: boolean = useMediaQuery('(max-width:1150px)');
     const [open, setOpen] = useState(false);
+    const [openChildItem, setOpenChildItem] = useState<{ [key: string]: boolean }>({});
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
+    };
+    const handleClick = (title: string) => {
+        setOpenChildItem(prev => ({ ...prev, [title]: !prev[title] }));
     };
 
     const DrawerList = (
@@ -59,7 +63,9 @@ const Header = () => {
                 alignItems: 'center',
                 padding: '10px',
             }}>
-                {userMenu.map((item: any, index: number) => (
+                {userMenu.map((item: any, index: number) => {
+                    const isOpen = openChildItem[item.title] || false;
+                    return (
                     <ListItemButton key={index} component={Link} to={item.href} sx={{
                         display: "flex",
                         ':hover': {
@@ -71,10 +77,12 @@ const Header = () => {
                         textDecoration: 'none',
                         pl: 1, pr: 1,
 
-                    }}>
+                    }} onClick={() => handleClick(item.title)}>
                         <Typography>{item.title}</Typography>
+                        {item.child ? isOpen ? <ExpandLess /> : <ExpandMore /> : <></>}
                     </ListItemButton>
-                ))}
+                    )
+                })}
             </Box> : <></>}
             {!isMobile && <Box sx={{ flex: 1 }}>
                 <SearchInput placeHolder="search text here" />
@@ -99,7 +107,7 @@ const Header = () => {
                 </Tooltip>
                 <Tooltip title="tài khoản">
                     <IconButtonGradient>
-                        <AccountCircleIcon/>
+                        <AccountCircleIcon />
                     </IconButtonGradient>
                 </Tooltip>
             </Box>

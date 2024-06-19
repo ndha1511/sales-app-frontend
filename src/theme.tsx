@@ -1,7 +1,18 @@
-import { experimental_extendTheme as extendTheme} from '@mui/material/styles';
-import {green, pink} from "@mui/material/colors";
+import { experimental_extendTheme as extendTheme } from '@mui/material/styles';
+import { green, pink } from '@mui/material/colors';
+
+const breakpoints = {
+    values: {
+        xs: 0,
+        sm: 600,
+        md: 960,
+        lg: 1280,
+        xl: 1920,
+    },
+};
 
 export const theme = extendTheme({
+    breakpoints: breakpoints,
     colorSchemes: {
         light: {
             palette: {
@@ -9,9 +20,8 @@ export const theme = extendTheme({
                     main: pink[600],
                 },
                 secondary: {
-                    main: '#f0f0f0'
+                    main: '#f0f0f0',
                 },
-
             },
         },
         dark: {
@@ -24,9 +34,7 @@ export const theme = extendTheme({
                 },
                 success: {
                     main: green[600],
-                }
-
-
+                },
             },
         },
     },
