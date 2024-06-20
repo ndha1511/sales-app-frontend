@@ -4,13 +4,15 @@ import IconButtonGradient from "../../components/common/IconButtonGradient";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { ExpandLess, ExpandMore, Notifications } from "@mui/icons-material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { primaryGradient } from "../../theme";
 import MenuIcon from '@mui/icons-material/Menu';
 import NavBar from "../common/NavBar";
-import { useState } from "react";
+import {useState } from "react";
 import logoIcon from "../../assets/logo/logo-icon.png";
 import { userMenu } from "../common/Menu";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
 
 
 
@@ -20,6 +22,8 @@ const Header = () => {
     const isMedium: boolean = useMediaQuery('(max-width:1150px)');
     const [open, setOpen] = useState(false);
     const [openChildItem, setOpenChildItem] = useState<{ [key: string]: boolean }>({});
+    const cart = useSelector((state: RootState) => state.cart.items);
+    const navigate = useNavigate();
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
     };
@@ -30,6 +34,8 @@ const Header = () => {
     const DrawerList = (
         <NavBar items={userMenu}></NavBar>
     );
+
+   
 
 
     return (
@@ -92,8 +98,8 @@ const Header = () => {
                 gap: '15px',
             }}>
                 <Tooltip title="giỏ hàng">
-                    <IconButtonGradient>
-                        <Badge badgeContent={4} color="primary">
+                    <IconButtonGradient onClick={() => navigate('/cart')}>
+                        <Badge badgeContent={cart.length} color="primary">
                             <ShoppingCartIcon fontSize="small" />
                         </Badge>
                     </IconButtonGradient>

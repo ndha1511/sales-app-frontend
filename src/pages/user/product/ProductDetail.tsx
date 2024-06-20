@@ -1,4 +1,4 @@
-import { Box, Button, Container, Rating, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Rating, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ProductResponse } from "../../../dtos/responses/product-response";
 import { useParams } from "react-router-dom";
@@ -12,8 +12,10 @@ import { convertPrice } from "../../../utils/convert-price";
 import { ColorModel } from "../../../models/color.model";
 import { SizeModel } from "../../../models/size.model";
 import DoneIcon from '@mui/icons-material/Done';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import { addToCartLocalStorage } from "../../../utils/cart-handle";
+import { useDispatch } from "react-redux";
+import { updateCartState } from "../../../redux/reducers/cart-reducer";
+import QuantityProduct from "../../../components/user/quantity-product/QuantityProduct";
 
 type SizeColorProps = {
     text: string;
@@ -55,6 +57,7 @@ const ProductDetail = () => {
     const { id } = useParams();
 
     const [product, setProduct] = useState<ProductModel>();
+    const dispatch = useDispatch();
 
     const [productImages, setProductImages] = useState<ProductImageModel[]>([]);
     const [productDetails, setProductDetails] = useState<ProductDetailModel[]>([]);
@@ -110,23 +113,36 @@ const ProductDetail = () => {
     }, []);
 
     useEffect(() => {
-        const productDetailFilter = productDetails.filter((productDetail: ProductDetailModel) => {
-            return productDetail.color.id === colors[activeColor].id && productDetail.size.id === sizes[activeSize].id;
-        });
-        setQuantityInStock(productDetailFilter[0]?.quantity ?? 0);
+        const productDetailFilter = getProductDetailByColorIdAndSizeId();
+        setQuantityInStock(productDetailFilter?.quantity ?? 0);
         setBuyQuantity(1);
     }, [activeColor, activeSize, productDetails]);
 
-    const increasement = () => {
-        if(quantityInStock > buyQuantity) {
-            setBuyQuantity(buyQuantity + 1);
-        } 
+
+    const getProductDetailByColorIdAndSizeId = () => {
+        const productDetailFilter = productDetails.filter((productDetail: ProductDetailModel) => {
+            return productDetail.color.id === colors[activeColor].id && productDetail.size.id === sizes[activeSize].id;
+        });
+        if(productDetailFilter.length > 0) {
+            return productDetailFilter[0];
+        }   
     }
 
-    const decreasement = () => {
-        if (buyQuantity > 1) {
-            setBuyQuantity(buyQuantity - 1);
+   
+    const addToCard = () => {
+        const productDetail = getProductDetailByColorIdAndSizeId();
+        if(productDetail) {
+            addToCartLocalStorage({
+                productDetail: productDetail,
+                quantity: buyQuantity
+            });
+            dispatch(updateCartState());
         }
+       
+    }
+
+    const setBuyQuantityProp = (value: number) => {
+        setBuyQuantity(value);
     }
 
     return (
@@ -216,15 +232,15 @@ const ProductDetail = () => {
                             <Typography>
                                 Số lượng:
                             </Typography>
-                            <Box>
-                                <Button onClick={decreasement}>
-                                    <RemoveIcon/>
-                                </Button>
-                                <TextField variant="outlined" type="number" value={buyQuantity} onChange={(e) => setBuyQuantity(Number(e.target.value))}/>
-                                <Button onClick={increasement}>
-                                    <AddIcon />
-                                </Button>
-                            </Box>
+                           <QuantityProduct quantity={buyQuantity} setQuantity={setBuyQuantityProp} maxValue={quantityInStock}/>
+                        </Box>
+                        <Box>
+                            <Button variant="contained" color="primary" onClick={addToCard}>
+                                Thêm vào giỏ hàng
+                            </Button>
+                            <Button variant="contained" color="secondary">
+                                Mua ngay
+                            </Button>
                         </Box>
                     </Box>
                 </Box>
