@@ -68,7 +68,7 @@ export const adminMenu = [
 export const userMenu = [
     {
         title: 'Trang chủ',
-        href: '/',
+        href: '/home',
     },
     {
         title: 'Sản phẩm',

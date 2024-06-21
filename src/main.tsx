@@ -4,7 +4,7 @@ import './index.scss'
 import { CssBaseline } from "@mui/material";
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles';
 import { theme } from "./theme.tsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import Dashboard from "./pages/admin/Dashboard.tsx";
 import AdminLayout from "./layouts/admin/AdminLayout.tsx";
 import Product from "./pages/admin/products/Product.tsx";
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
         element: <AdminLayout><Provider /></AdminLayout>
     },
     {
-        path: '/',
+        path: '/home',
         element: <UserLayout><Home /></UserLayout>
     },
     {
@@ -57,6 +57,11 @@ const router = createBrowserRouter([
         path: '/cart',
         element: <UserLayout><Cart /></UserLayout>
     },
+    {
+        path: '/',
+        element: <Navigate to={"/home"}></Navigate>
+    
+    }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

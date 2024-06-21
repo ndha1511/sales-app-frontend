@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import CartEmpty from "./CartEmpty";
@@ -25,7 +25,7 @@ const Cart = () => {
             {cart.length > 0 ?
                 <>
                     <Box sx={{
-                        height: "50vh",
+                        maxHeight: "50vh",
                         overflow: 'auto',
                         display: 'flex',
                         flexDirection: 'column',
@@ -38,6 +38,10 @@ const Cart = () => {
                     <Box>
                         <Typography>Tổng tiền: {convertPrice(totalMoney)}</Typography>
                     </Box>
+                    <Box>
+                        <Button>Chọn mã giảm giá</Button>
+                    </Box>
+                    <Button>Thanh toán</Button>
                 </> :
                 <CartEmpty />}
         </Container>

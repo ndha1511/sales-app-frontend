@@ -82,7 +82,7 @@ const Provider = () => {
                                     <Button sx={{
                                         width: '70px',
                                         height: '20px',
-                                        fontSize: '9px',
+                                        fontSize: '8px',
                                         fontWeight: 'bold',
                                         textTransform: 'none',
                                         ml: 1
@@ -92,7 +92,7 @@ const Provider = () => {
                                     <Button sx={{
                                         width: '70px',
                                         height: '20px',
-                                        fontSize: '9px',
+                                        fontSize: '8px',
                                         fontWeight: 'bold',
                                         textTransform: 'none',
                                         ml: 1

@@ -194,6 +194,17 @@ const CreateProduct = () => {
         })();
     }, []);
 
+    // cleanup
+    useEffect(() => {
+        return () => {
+            urls.forEach(url => {
+                URL.revokeObjectURL(url);
+            });
+        }
+    }, [urls]);
+
+    
+
     const handleChangeImages = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files && files.length > 0) {
@@ -212,6 +223,7 @@ const CreateProduct = () => {
     }
 
     const removeImage = (index: number) => {
+        URL.revokeObjectURL(urls[index]);
         setUrls(prev => {
             const newUrls = prev.filter(url => url !== prev[index]);
             return newUrls;
@@ -274,7 +286,6 @@ const CreateProduct = () => {
                         display: 'flex',
                         flexGrow: 1
                     }}
-                    id="product-name"
                     label="Tên sản phẩm"
                     name="productName"
                     value={formik.values.productName}
@@ -289,7 +300,6 @@ const CreateProduct = () => {
                         display: 'flex',
                         flexGrow: 1
                     }}
-                    id="product-price"
                     label="Giá"
                     type="number"
                     name="price"
@@ -311,10 +321,9 @@ const CreateProduct = () => {
                     display: 'flex',
                     flexGrow: 1
                 }}>
-                    <InputLabel id="categories">Loại sản phẩm</InputLabel>
+                    <InputLabel id="categoriesLabel">Loại sản phẩm</InputLabel>
                     <Select
-                        labelId="categories"
-                        id="categories"
+                        labelId="categoriesLabel"
                         label="Loại sản phẩm"
                         name="categoryId"
                         value={formik.values.categoryId}
@@ -335,10 +344,9 @@ const CreateProduct = () => {
                     display: 'flex',
                     flexGrow: 1
                 }}>
-                    <InputLabel id="providers">Nhà cung cấp</InputLabel>
+                    <InputLabel id="providersLabel">Nhà cung cấp</InputLabel>
                     <Select
-                        labelId="providers"
-                        id="providers"
+                        labelId="providersLabel"
                         label="Nhà cung cấp"
                         name="providerId"
                         value={formik.values.providerId}
@@ -362,7 +370,6 @@ const CreateProduct = () => {
                         display: 'flex',
                         flexGrow: 1
                     }}
-                    id="outlined-multiline-static"
                     label="Mô tả"
                     name="description"
                     value={formik.values.description}
@@ -416,9 +423,9 @@ const CreateProduct = () => {
                     display: 'flex',
                     flexGrow: 1
                 }}>
-                    <InputLabel id="colors">Màu sắc</InputLabel>
+                    <InputLabel id="colorsLabel">Màu sắc</InputLabel>
                     <Select
-                        labelId="colors"
+                        labelId="colorsLabel"
                         id="colors"
                         label="Màu sắc"
                         name="colorId"
@@ -437,10 +444,9 @@ const CreateProduct = () => {
                     display: 'flex',
                     flexGrow: 1
                 }}>
-                    <InputLabel id="sizes">Kích thước</InputLabel>
+                    <InputLabel id="sizesIdLabel">Kích thước</InputLabel>
                     <Select
-                        labelId="sizes"
-                        id="sizes"
+                        labelId="sizesIdLabel"
                         label="Kích thước"
                         name="sizeId"
                         value={formikProductDetail.values.sizeId}
@@ -461,7 +467,6 @@ const CreateProduct = () => {
             }}>
                 <TextField
                     sx={{ flex: 1 }}
-                    id="product-price"
                     label="Số lượng"
                     type="number"
                     name="quantity"

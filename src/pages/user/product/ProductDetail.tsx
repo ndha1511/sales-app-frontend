@@ -7,7 +7,6 @@ import { getProductById } from "../../../services/product.service";
 import { ProductImageModel } from "../../../models/product-image.model";
 import { ProductModel } from "../../../models/product.model";
 import { ProductDetailModel } from "../../../models/product-detail.model";
-import Carousel from "react-material-ui-carousel";
 import { convertPrice } from "../../../utils/convert-price";
 import { ColorModel } from "../../../models/color.model";
 import { SizeModel } from "../../../models/size.model";
@@ -16,6 +15,7 @@ import { addToCartLocalStorage } from "../../../utils/cart-handle";
 import { useDispatch } from "react-redux";
 import { updateCartState } from "../../../redux/reducers/cart-reducer";
 import QuantityProduct from "../../../components/user/quantity-product/QuantityProduct";
+import ListImage from "../../../components/user/list-image/ListImage";
 
 type SizeColorProps = {
     text: string;
@@ -149,46 +149,16 @@ const ProductDetail = () => {
         <Container sx={{
             display: 'flex',
             justifyContent: 'center',
-            mt: 5
+            mt: 5,
+            mb: 2,
+            pb: 2
 
         }}>
             <Box sx={{
                 display: 'flex',
                 gap: '50px',
-                flex: 1
             }}>
-                <Box>
-                    <Carousel sx={{
-                        width: 400,
-                        height: 400,
-                        display: 'flex',
-                        justifyContent: 'flex-start',
-                        alignItems: 'center',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
-                        margin: 'auto',
-                        padding: '10px',
-                        borderRadius: '10px',
-                        boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)',
-                        background: '#fff',
-                        boxSizing: 'border-box',
-                        border: '1px solid rgba(0, 0, 0, 0.125)',
-                        transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                    }}>
-                        {
-                            productImages.map((productImage: ProductImageModel) => {
-                                return (
-                                    <Box sx={{ width: '100%', height: '100%' }}>
-                                        <img
-                                            width={'100%'}
-                                            height={'100%'}
-                                            src={productImage.path} alt={productImage.id?.toString()} />
-                                    </Box>
-                                )
-                            })
-                        }
-                    </Carousel>
-                </Box>
+                <ListImage images={productImages}/>
                 <Box>
                     <Typography variant="h5">
                         {product?.productName}
@@ -210,7 +180,7 @@ const ProductDetail = () => {
                                 Màu sắc:
                             </Typography>
                             {colors.map((color: ColorModel, index: number) => (
-                                <SizeColorBox text={color.colorName ?? ''} changeActive={changeActiveColor}
+                                <SizeColorBox key={color.id} text={color.colorName ?? ''} changeActive={changeActiveColor}
                                     index={index} activeIndex={activeColor} />
                             ))}
                         </Box>
@@ -219,7 +189,7 @@ const ProductDetail = () => {
                                 Kích thước:
                             </Typography>
                             {sizes.map((size: SizeModel, index: number) => (
-                                <SizeColorBox text={size.numberSize?.toString() ?? size.textSize ?? ''}
+                                <SizeColorBox key={size.id} text={size.numberSize?.toString() ?? size.textSize ?? ''}
                                     changeActive={changeActiveSize} index={index} activeIndex={activeSize} />
                             ))}
                         </Box>

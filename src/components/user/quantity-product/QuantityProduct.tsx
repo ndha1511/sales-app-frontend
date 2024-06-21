@@ -39,13 +39,23 @@ const QuantityProduct = ({quantity, setQuantity, maxValue, cartItem} : Props) =>
         }
     }, [quantity])
 
+    const changeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setQuantity(Number(e.target.value) > maxValue ? maxValue: Number(e.target.value));
+    }
+
+    const blurInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if(Number(e.target.value) < 1) {
+            setQuantity(1);
+        }
+    }
+
     
     return (
         <Box>
             <Button onClick={(e) => decreasement(e)}>
                 <RemoveIcon />
             </Button>
-            <TextField variant="outlined" type="number" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
+            <TextField variant="outlined" type="number" value={quantity} onChange={(e) => changeInput(e)} onBlur={(e) => blurInput(e)}/>
             <Button onClick={(e) => increasement(e)}>
                 <AddIcon />
             </Button>
