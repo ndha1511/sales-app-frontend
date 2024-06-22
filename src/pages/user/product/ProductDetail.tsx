@@ -28,12 +28,18 @@ const SizeColorBox = ({ text, changeActive, index, activeIndex }: SizeColorProps
     return (
         <Box sx={{
             p: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             background: '#fff',
             textAlign: 'center',
             color: 'black',
             borderRadius: '10px',
             position: 'relative',
             cursor: 'pointer',
+            border: '1px solid black',
+            flexGrow: 1,
+            maxWidth: '150px',
             '&:hover': {
                 background: '#f0f0f0',
             }
@@ -44,9 +50,15 @@ const SizeColorBox = ({ text, changeActive, index, activeIndex }: SizeColorProps
             {index === activeIndex && <Box sx={{
                 position: 'absolute',
                 top: 0,
-                right: 0
+                right: '5px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                color: 'green',
+
             }}>
-                <DoneIcon />
+                <DoneIcon/>
             </Box>}
         </Box>
     )
@@ -123,22 +135,22 @@ const ProductDetail = () => {
         const productDetailFilter = productDetails.filter((productDetail: ProductDetailModel) => {
             return productDetail.color.id === colors[activeColor].id && productDetail.size.id === sizes[activeSize].id;
         });
-        if(productDetailFilter.length > 0) {
+        if (productDetailFilter.length > 0) {
             return productDetailFilter[0];
-        }   
+        }
     }
 
-   
+
     const addToCard = () => {
         const productDetail = getProductDetailByColorIdAndSizeId();
-        if(productDetail) {
+        if (productDetail) {
             addToCartLocalStorage({
                 productDetail: productDetail,
                 quantity: buyQuantity
             });
             dispatch(updateCartState());
         }
-       
+
     }
 
     const setBuyQuantityProp = (value: number) => {
@@ -149,72 +161,98 @@ const ProductDetail = () => {
         <Container sx={{
             display: 'flex',
             justifyContent: 'center',
-            mt: 5,
-            mb: 2,
+            flexDirection: 'column',
             pb: 2
 
         }}>
             <Box sx={{
                 display: 'flex',
                 gap: '50px',
+                flexWrap: 'wrap'
             }}>
-                <ListImage images={productImages}/>
-                <Box>
-                    <Typography variant="h5">
+                <ListImage images={productImages} />
+
+                {/* right */}
+                <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '20px', width: '45%' }}>
+                    <Typography component={'p'} variant="h5" sx={{
+                        maxWidth: '100%',
+                        wordBreak: 'break-word'
+                    }}>
                         {product?.productName}
                     </Typography>
                     <Typography>
-                        {product?.provider?.providerName}
+                        Nhà cung cấp: {product?.provider?.providerName}
                     </Typography>
-                    <Typography>
-                        {convertPrice(product?.price)}
-                    </Typography>
-                    {product?.avgRating ? <Box>
+                    <Box sx={{ display: 'flex', gap: '25px' }}>
+                        <Typography sx={{
+                            textDecoration: 'line-through'
+                        }}>
+                            {convertPrice(product?.price)}
+                        </Typography>
+                        <Typography >
+                            {convertPrice(product?.price)}
+                        </Typography>
+                    </Box>
+                    {product?.avgRating ? <Box sx={{ display: 'flex', gap: '5px' }}>
                         <Rating name="read-only" value={product.avgRating} readOnly />
-                        <Typography>{product.numberOfRating + ' đánh giá'}</Typography>
+                        <Typography sx={{ color: 'blue' }}>{product.numberOfRating + ' đánh giá'}</Typography>
                     </Box> :
                         <Typography>Chưa có đánh giá</Typography>}
-                    <Box>
-                        <Box>
-                            <Typography>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '20px',
+                    }}>
+                        <Box sx={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                            <Typography sx={{ flexGrow: 1, maxWidth: '20%' }}>
                                 Màu sắc:
                             </Typography>
-                            {colors.map((color: ColorModel, index: number) => (
-                                <SizeColorBox key={color.id} text={color.colorName ?? ''} changeActive={changeActiveColor}
-                                    index={index} activeIndex={activeColor} />
-                            ))}
+                            <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                {colors.map((color: ColorModel, index: number) => (
+                                    <SizeColorBox key={color.id} text={color.colorName ?? ''} changeActive={changeActiveColor}
+                                        index={index} activeIndex={activeColor} />
+                                ))}
+                            </Box>
                         </Box>
-                        <Box>
-                            <Typography>
+                        <Box sx={{ display: 'flex', gap: '12px' }}>
+                            <Typography sx={{ flexGrow: 1, maxWidth: '20%' }}>
                                 Kích thước:
                             </Typography>
-                            {sizes.map((size: SizeModel, index: number) => (
-                                <SizeColorBox key={size.id} text={size.numberSize?.toString() ?? size.textSize ?? ''}
-                                    changeActive={changeActiveSize} index={index} activeIndex={activeSize} />
-                            ))}
+                            <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                {sizes.map((size: SizeModel, index: number) => (
+                                    <SizeColorBox key={size.id} text={size.numberSize?.toString() ?? size.textSize ?? ''}
+                                        changeActive={changeActiveSize} index={index} activeIndex={activeSize} />
+                                ))}
+                            </Box>
                         </Box>
                         <Box>
                             <Typography>
                                 Số lượng trong kho: {quantityInStock?.toString()}
                             </Typography>
                         </Box>
-                        <Box>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
                             <Typography>
                                 Số lượng:
                             </Typography>
-                           <QuantityProduct quantity={buyQuantity} setQuantity={setBuyQuantityProp} maxValue={quantityInStock}/>
+                            <QuantityProduct quantity={buyQuantity} setQuantity={setBuyQuantityProp} maxValue={quantityInStock} />
                         </Box>
-                        <Box>
-                            <Button variant="contained" color="primary" onClick={addToCard}>
+                        <Box sx={{
+                            mt: 2,
+                            display: 'flex',
+                            gap: '20px',
+                            alignItems: 'center'
+                        }}>
+                            <Button variant="contained" color="warning" onClick={addToCard}>
                                 Thêm vào giỏ hàng
                             </Button>
-                            <Button variant="contained" color="secondary">
+                            <Button variant="contained" color="success">
                                 Mua ngay
                             </Button>
                         </Box>
                     </Box>
                 </Box>
             </Box>
+            <Typography  variant="h6">Mô tả sản phẩm</Typography>
             <Box>
                 <Box>
 
@@ -226,6 +264,9 @@ const ProductDetail = () => {
                     <Box></Box>
                 </Box>
             </Box>
+            <Typography sx={{ mt: 2 }} variant="h6">Đánh giá</Typography>
+            <Box></Box>
+            <Typography sx={{ mt: 2 }} variant="h6">Các sản phẩm tương tự</Typography>
             <Box></Box>
         </Container>
     )

@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { convertPrice } from "../../../utils/convert-price";
 import { useNavigate } from "react-router-dom";
 import { CartItemModel } from "../../../models/cart-item.model";
@@ -7,6 +7,7 @@ import { useState } from "react";
 import { removeItemCart } from "../../../utils/cart-handle";
 import { useDispatch } from "react-redux";
 import { updateCartState } from "../../../redux/reducers/cart-reducer";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 type Props = {
     item: CartItemModel
@@ -29,18 +30,19 @@ const CartItem = ({ item }: Props) => {
     return (
         <Box sx={{
             display: 'flex',
+            p: 1,
             alignItems: 'center',
-            gap: '20px',
+            gap: '10px',
             ':hover': {
                 backgroundColor: 'secondary.main'
             },
             cursor: 'pointer'
         }} onClick={() => (navigate("/products/" + item.productDetail.product?.id))}>
-            <img src={item.productDetail.product?.thumbnail ?? ""} alt={item.productDetail.product?.productName ?? ""} width={"20%"} height={150} />
-            <Box>
+            <img src={item.productDetail.product?.thumbnail ?? ""} alt={item.productDetail.product?.productName ?? ""} width={"15%"} height={150} />
+            <Box sx={{width: '15%'}}>
                 <Typography>Tên sản phẩm: {item.productDetail.product?.productName}</Typography>
             </Box>
-            <Box>
+            <Box sx={{width: '20%'}}>
                 <Box>
                     <Typography>Màu sắc: {item.productDetail.color.colorName}</Typography>
                 </Box>
@@ -48,20 +50,22 @@ const CartItem = ({ item }: Props) => {
                     <Typography>Kích thước: {item.productDetail.size.numberSize ?? item.productDetail.size.textSize}</Typography>
                 </Box>
             </Box>
-            <Box>
+            <Box sx={{width: '20%'}}>
                 <Typography>Đơn giá: {convertPrice(item.productDetail.product?.price)}</Typography>
             </Box>
-            <Box onClick={(e) => {e.stopPropagation()}}>
+            <Box onClick={(e) => { e.stopPropagation() }} sx={{width: '20%'}}>
                 <Typography>Còn {item.productDetail.quantity} sản phẩm</Typography>
-                <QuantityProduct cartItem={item} quantity={quantity} setQuantity={setQuantityProp} maxValue={item.productDetail?.quantity ?? 0}/>
+                <QuantityProduct cartItem={item} quantity={quantity} setQuantity={setQuantityProp} maxValue={item.productDetail?.quantity ?? 0} />
             </Box>
-            <Box>
+            <Box sx={{width: '20%'}}>
                 <Typography>Số tiền: {convertPrice((item.productDetail.product?.price ?? 0) * (item.quantity ?? 0))}</Typography>
             </Box>
-            <Box>
-                <Button variant="contained" size="small" color="error"
-                    onClick={(e) => deleteItemCart(e)}
-                >Xóa</Button>
+            <Box sx={{width: '8%'}}>
+                <Tooltip title="xóa">
+                    <Button variant="contained" size="small" color="error"
+                        onClick={(e) => deleteItemCart(e)}
+                    ><DeleteIcon /></Button>
+                </Tooltip>
             </Box>
         </Box>
     )

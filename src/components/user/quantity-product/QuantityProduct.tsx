@@ -14,14 +14,14 @@ type Props = {
     cartItem?: CartItemModel
 }
 
-const QuantityProduct = ({quantity, setQuantity, maxValue, cartItem} : Props) => {
+const QuantityProduct = ({ quantity, setQuantity, maxValue, cartItem }: Props) => {
     const distpatch = useDispatch();
 
-    const increasement = (e : React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const increasement = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation();
-        if(maxValue > quantity) {
+        if (maxValue > quantity) {
             setQuantity(quantity + 1);
-        } 
+        }
     }
 
     const decreasement = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -29,33 +29,48 @@ const QuantityProduct = ({quantity, setQuantity, maxValue, cartItem} : Props) =>
         if (quantity > 1) {
             setQuantity(quantity - 1);
         }
-        
+
     }
     useEffect(() => {
-        if(cartItem) {
-            let newCartItem : CartItemModel = {...cartItem, quantity: quantity};
+        if (cartItem) {
+            let newCartItem: CartItemModel = { ...cartItem, quantity: quantity };
             updateItemCart(newCartItem);
             distpatch(updateCartState());
         }
     }, [quantity])
 
     const changeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setQuantity(Number(e.target.value) > maxValue ? maxValue: Number(e.target.value));
+        setQuantity(Number(e.target.value) > maxValue ? maxValue : Number(e.target.value));
     }
 
     const blurInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if(Number(e.target.value) < 1) {
+        if (Number(e.target.value) < 1) {
             setQuantity(1);
         }
     }
 
-    
+
     return (
-        <Box>
+        <Box sx={{
+            display: 'flex'
+        }}>
             <Button onClick={(e) => decreasement(e)}>
                 <RemoveIcon />
             </Button>
-            <TextField variant="outlined" type="number" value={quantity} onChange={(e) => changeInput(e)} onBlur={(e) => blurInput(e)}/>
+            <TextField
+            sx={{
+                width: '50%'
+            }}
+                InputProps={{
+                    sx: {
+                        width: '100%',
+
+                        '& .MuiInputBase-input': {
+                            textAlign: 'center',
+                        }
+                    }
+                }}
+                variant="outlined" type="number" value={quantity} onChange={(e) => changeInput(e)} onBlur={(e) => blurInput(e)} />
             <Button onClick={(e) => increasement(e)}>
                 <AddIcon />
             </Button>
