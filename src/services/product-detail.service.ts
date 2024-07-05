@@ -6,7 +6,7 @@ import { ProductDetailModel } from "../models/product-detail.model";
 export const createProductDetail = async (productDetailDto: ProductDetailDto): Promise<ResponseSuccess<ProductDetailModel>> => {
     try {
         const response = await requestConfig(
-            'productDetails',
+            'product-details',
             Method.POST,
             productDetailDto,
             ContentType.JSON

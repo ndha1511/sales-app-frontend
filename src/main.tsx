@@ -18,6 +18,10 @@ import ProductDetail from './pages/user/product/ProductDetail.tsx';
 import { Provider as ProviderRedux } from 'react-redux'
 import { store } from './redux/store/store.ts';
 import Cart from './pages/user/cart/Cart.tsx';
+import Login from './pages/user/auth/Login.tsx';
+import LoginSuccess from './pages/user/auth/LoginSucess.tsx';
+import Register from './pages/user/auth/Register.tsx';
+import VerifyEmail from './pages/user/auth/VerifyEmail.tsx';
 
 
 const router = createBrowserRouter([
@@ -60,6 +64,26 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <Navigate to={"/home"}></Navigate>
+    
+    },
+    {
+        path: '/auth/login',
+        element: <Login></Login>
+    
+    },
+    {
+        path: '/auth/login-success',
+        element: <LoginSuccess></LoginSuccess>
+    
+    },
+    {
+        path: '/auth/register',
+        element: <Register></Register>
+    
+    },
+    {
+        path: '/auth/verify',
+        element: <VerifyEmail></VerifyEmail>
     
     }
 ]);
