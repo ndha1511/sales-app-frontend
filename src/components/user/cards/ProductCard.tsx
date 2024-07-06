@@ -1,9 +1,10 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography, useMediaQuery } from "@mui/material";
-import { ProductModel } from "../../../models/product.model";
 import { useNavigate } from "react-router-dom";
+import { ProductUserResponse } from "../../../dtos/responses/product-user-response";
+import { convertPrice } from "../../../utils/convert-price";
 
 type Props = {
-    product: ProductModel
+    product: ProductUserResponse
 }
 
 const ProductCard = ({product} : Props) => {
@@ -16,8 +17,8 @@ const ProductCard = ({product} : Props) => {
                 transform: 'scale(1.05)',
                 boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
             }
-         }} onClick={() => navigate('/products/' + product.id)}>
-            <Box sx={{
+         }} onClick={() => navigate('/products/' + product.product.id)}>
+            {product.discount && <Box sx={{
                 position: 'absolute',
                 top: 0,
                 right: 0,
@@ -28,37 +29,37 @@ const ProductCard = ({product} : Props) => {
                 <Typography sx={{
                     color: '#fff',
                     fontSize: isMobile? '8px' : '18px'
-                }}>Sale off 40%</Typography>
-            </Box>
+                }}>Giảm giá {product.discount * 100}%</Typography>
+            </Box>}
             <CardMedia
                 component="img"
                 height={isMobile ? "160" : "250"}
                 width={'100%'}
-                image={product?.thumbnail ?? ''}
-                alt={product?.productName ?? ''}
+                image={product?.product.thumbnail ?? ''}
+                alt={product?.product.productName ?? ''}
             />
             <CardContent sx={{mb: 0, pb: 0}}>
                 <Typography gutterBottom sx={{
                     fontSize: isMobile? '12px' : '18px'
                 }}>
-                    {product?.productName ?? ''}
+                    {product?.product.productName ?? ''}
                 </Typography>
                 <Box sx={{
                     display: 'flex',
                     gap: '20px',
                     alignItems: 'center'
                 }}>
-                    <Typography color="text.secondary" sx={{
-                        textDecoration: 'line-through',
+                    <Typography color={product.discount ? "text.secondary" : ""} sx={{
+                        textDecoration: product.discount ? 'line-through' : 'none',
                         fontSize: isMobile ? '8px' : '16px'
                     }}>
-                        1.500.000 đ
+                        {convertPrice(product.product.price)}
                     </Typography>
-                    <Typography sx={{
+                    {product.discountedPrice && <Typography sx={{
                         fontSize: isMobile? '8px' : '16px'
                     }}>
-                        1.000.000 đ
-                    </Typography>
+                        {convertPrice(product.product.price - product.discountedPrice)}
+                    </Typography>}
                 </Box>
             </CardContent>
             <CardActions sx={{

@@ -14,6 +14,7 @@ export enum Method {
 export enum ContentType {
     JSON = 'application/json',
     FORM_DATA = 'multipart/form-data',
+    TEXT_PLAIN = 'text/plain'
 }
 
 const requestConfig = <T>(endpoint: string, method: Method, data: T,  contentType: ContentType, interceptor: boolean = false) => {

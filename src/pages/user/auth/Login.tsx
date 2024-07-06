@@ -1,5 +1,5 @@
 import { Backdrop, Box, Button, CircularProgress, Container, IconButton, TextField, Typography } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import { green } from "@mui/material/colors";
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import { login, loginWithSocial } from "../../../services/auth.service";
@@ -13,6 +13,7 @@ import { getUserByEmail, saveUserToLocalStorage } from "../../../services/user.s
 import { UserModel } from "../../../models/user.model";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logoIcon from "../../../assets/logo/logo-icon.png";
 
 const validationLoginSchema = yup.object({
     email: yup.string().required('Vui lòng nhập email'),
@@ -57,12 +58,21 @@ const Login = () => {
                 width: '60%',
                 display: "flex",
                 justifyContent: 'center',
-                background: blue[400],
+                background: green[500],
                 p: 2,
                 gap: '12px',
                 flexDirection: "column",
                 borderRadius: '8px'
             }}>
+                <Box sx={{
+                    flex: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px'
+                }}>
+                    <img src={logoIcon} alt={"logo"} width={"55px"} height={"55px"} />
+                </Box>
                 <TextField
                     sx={{
                         flex: 1
@@ -99,6 +109,7 @@ const Login = () => {
                     </IconButton>
                 </Box>
                 <Button onClick={() => navigate("/auth/register")}>Tạo tài khoản</Button>
+                <Button onClick={() => navigate("/auth/forgot-password")}>Quên mật khẩu</Button>
 
             </Box>
             <Backdrop

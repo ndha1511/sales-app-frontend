@@ -5,16 +5,18 @@ import { saveToken } from "../../../services/token.service";
 import { UserModel } from "../../../models/user.model";
 import { getUserByEmail, saveUserToLocalStorage } from "../../../services/user.service";
 import { ResponseSuccess } from "../../../dtos/responses/response.success";
+import { getCookie } from "../../../utils/cookie-handle";
+
 
 const LoginSuccess = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const accessToken = queryParams.get("accessToken");
-    const refreshToken = queryParams.get("refreshToken");
     const email = queryParams.get("email");
     useEffect(() => {
         (async () => {
+            const accessToken = getCookie('accessToken');
+            const refreshToken = getCookie('refreshToken');
             if(accessToken && refreshToken && email) {
                 const loginResponse: LoginResponse = {
                     accessToken: accessToken,

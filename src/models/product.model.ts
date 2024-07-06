@@ -4,8 +4,8 @@ import { ProviderModel } from "./provider.model";
 
 export type ProductModel = {
     id?: number;
-    productName?: string;
-    price?: number;
+    productName: string;
+    price: number;
     category?: CategoryModel;
     avgRating?: number;
     numberOfRating?: number;

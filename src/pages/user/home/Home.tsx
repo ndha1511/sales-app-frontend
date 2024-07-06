@@ -2,18 +2,18 @@ import { Box, Button, Container, Typography, useMediaQuery } from "@mui/material
 import Carousel from "../../../components/user/carousels/Carousel";
 import ProductCard from "../../../components/user/cards/ProductCard";
 import { useEffect, useState } from "react";
-import { ProductModel } from "../../../models/product.model";
-import { getAllProducts } from "../../../services/product.service";
+import {getPageProducts } from "../../../services/product.service";
+import { ProductUserResponse } from "../../../dtos/responses/product-user-response";
 
 
 const Home = () => {
-     const [productSales, setProductSales] = useState<ProductModel[]>([]);
+     const [productSales, setProductSales] = useState<ProductUserResponse[]>([]);
 
      useEffect(() => {
           const fetchData = async () => {
-               const response = await getAllProducts();
+               const response = await getPageProducts();
                if (response.status === 200) {
-                    setProductSales(response.data);
+                    setProductSales(response.data.data);
                }
           };
           fetchData();
@@ -30,8 +30,8 @@ const Home = () => {
                          flexWrap: 'wrap',
                          justifyContent: 'center'
                     }}>
-                         {productSales.map((product: ProductModel) => (
-                              <Box key={product.id} sx={{ flexBasis: isMobile ? '100px' : '250px', flexGrow: 1, maxWidth: isMobile ? '150px' : '250px' }}>
+                         {productSales.map((product: ProductUserResponse) => (
+                              <Box key={product.product.id} sx={{ flexBasis: isMobile ? '100px' : '250px', flexGrow: 1, maxWidth: isMobile ? '150px' : '250px' }}>
                                    <ProductCard product={product}></ProductCard>
                               </Box>
                          ))}
