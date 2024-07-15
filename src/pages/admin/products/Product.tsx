@@ -12,7 +12,6 @@ import AddIcon from '@mui/icons-material/Add';
 import {useNavigate} from "react-router-dom";
 import ProductCard from "../../../components/admin/cards/ProductCard.tsx";
 import { useEffect, useState } from "react";
-import { ProductDetailModel } from "../../../models/product-detail.model.ts";
 import { getAllProducts } from "../../../services/product.service.ts";
 import { ResponseSuccess } from "../../../dtos/responses/response.success.ts";
 import { ProductModel } from "../../../models/product.model.ts";
@@ -24,12 +23,12 @@ const Product = () => {
     const fNavigate = (id: number) => {
         navigate('update/' + id);
     }
-    const [products, setProducts] = useState<ProductDetailModel[]>([]);
+    const [products, setProducts] = useState<ProductModel[]>([]);
 
     useEffect(() => {
         (async () => {
             try {
-                const response: ResponseSuccess<ProductDetailModel[]> = await getAllProducts();
+                const response: ResponseSuccess<ProductModel[]> = await getAllProducts();
                 setProducts(response.data);
             } catch (e) {
                 console.log(e);

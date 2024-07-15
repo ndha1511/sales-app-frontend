@@ -5,7 +5,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Container, TextField } from '@mui/material';
+import { Container, TextField, useColorScheme, useMediaQuery } from '@mui/material';
 import { getVeriryCode, resetPassword, verifyResetPassword } from '../../../services/auth.service';
 import { VerifyEmailDto } from '../../../dtos/requests/verify-email.dto';
 import { ResetPasswordRequest } from '../../../dtos/requests/reset-password-request';
@@ -16,7 +16,7 @@ import { saveToken } from '../../../services/token.service';
 import { LoginResponse } from '../../../dtos/responses/login-response';
 import { useNavigate } from 'react-router-dom';
 
-const steps = ['Nhập email của bạn', 'Nhập mã xác thực', 'Cập nhật mật khẩu'];
+const steps = ['Nhập email', 'Nhập mã xác thực', 'Cập nhật mật khẩu'];
 
 export default function ForgotPassword() {
     const [activeStep, setActiveStep] = React.useState(0);
@@ -24,6 +24,9 @@ export default function ForgotPassword() {
     const [otp, setOtp] = React.useState("");
     const [password, setPassword] = React.useState("");
     const navigate = useNavigate();
+    const { mode } = useColorScheme();
+    const isMobile: boolean = useMediaQuery('(max-width:768px)');
+    const isMedium: boolean = useMediaQuery('(max-width:980px)');
 
     const handleStep1 = async () => {
         try {
@@ -153,7 +156,23 @@ export default function ForgotPassword() {
     }
 
     return (
-        <Container>
+        <Container sx={{
+            height: '100vh',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        }}>
+            <Box sx={{
+                width: isMedium ? '65%' : '40%',
+                flexGrow: isMobile ? 1 : 0,
+                display: "flex",
+                justifyContent: 'center',
+                backgroundColor: mode === "dark" ? "common.black" : "common.white",
+                p: 3,
+                gap: '12px',
+                flexDirection: "column",
+                borderRadius: '12px'
+            }}>
             <Stepper activeStep={activeStep}>
                 {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {};
@@ -168,6 +187,7 @@ export default function ForgotPassword() {
                 })}
             </Stepper>
             {renderBody()}
+            </Box>
 
         </Container>
     );

@@ -95,3 +95,22 @@ export const loginWithSocial = (provider: string) => {
     window.location.href = `${apiUrl}/oauth2/authorization/${provider}`
 }
 
+export const lougout = async (accessToken: string) : Promise<ResponseSuccess<string | null>> => {
+    try {
+        const response = await requestConfig(
+            `auth/logout`,
+            Method.POST,
+            accessToken,
+            ContentType.TEXT_PLAIN
+        );
+        return response.data;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+export const removeLocalStorage = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+}
+

@@ -1,7 +1,22 @@
-import { Backdrop, Box, Button, CircularProgress, Container, IconButton, TextField, Typography } from "@mui/material";
-import { green } from "@mui/material/colors";
+import {
+    Backdrop,
+    Box,
+    CircularProgress,
+    Container,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Tooltip,
+    Typography,
+    useColorScheme,
+    useMediaQuery
+} from "@mui/material";
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { login, loginWithSocial } from "../../../services/auth.service";
 import * as yup from 'yup';
 import { useFormik } from "formik";
@@ -12,8 +27,8 @@ import { saveToken } from "../../../services/token.service";
 import { getUserByEmail, saveUserToLocalStorage } from "../../../services/user.service";
 import { UserModel } from "../../../models/user.model";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import logoIcon from "../../../assets/logo/logo-icon.png";
+import { Link, useNavigate } from "react-router-dom";
+import ButtonGradient from "../../../components/common/ButtonGradient";
 
 const validationLoginSchema = yup.object({
     email: yup.string().required('Vui lòng nhập email'),
@@ -21,8 +36,12 @@ const validationLoginSchema = yup.object({
 });
 
 const Login = () => {
+    const { mode } = useColorScheme();
+    const isMobile: boolean = useMediaQuery('(max-width:768px)');
+    const isMedium: boolean = useMediaQuery('(max-width:980px)');
     const [error, setError] = useState("");
     const [open, setOpen] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const formikLogin = useFormik({
         initialValues: {
@@ -44,9 +63,14 @@ const Login = () => {
                 localStorage.removeItem("user");
                 setError("email hoặc mật khẩu không chính xác");
             }
-            
+
         },
     });
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
         <Container sx={{
             height: '100vh',
@@ -55,23 +79,27 @@ const Login = () => {
             alignItems: "center"
         }}>
             <Box sx={{
-                width: '60%',
+                width: isMedium ? '65%' : '40%',
+                flexGrow: isMobile ? 1 : 0,
                 display: "flex",
                 justifyContent: 'center',
-                background: green[500],
-                p: 2,
+                backgroundColor: mode === "dark" ? "common.black" : "common.white",
+                p: 3,
                 gap: '12px',
                 flexDirection: "column",
-                borderRadius: '8px'
+                borderRadius: '12px'
             }}>
                 <Box sx={{
                     flex: 1,
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    gap: '10px'
+                    mt: 1,
+                    mb: 1
                 }}>
-                    <img src={logoIcon} alt={"logo"} width={"55px"} height={"55px"} />
+
+                    <Typography variant="h6" fontWeight={'bold'}>ĐĂNG NHẬP</Typography>
+
                 </Box>
                 <TextField
                     sx={{
@@ -80,37 +108,107 @@ const Login = () => {
                     label="Email"
                     name="email"
                     value={formikLogin.values.email}
-                    onChange={formikLogin.handleChange}
+                    onChange={e => { formikLogin.handleChange(e); setError("") }}
                     onBlur={formikLogin.handleBlur}
                     error={formikLogin.touched.email && Boolean(formikLogin.errors.email)}
-                    helperText={formikLogin.touched.email && formikLogin.errors.email}
+                    helperText={formikLogin.touched.email ? formikLogin.errors.email : " "}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <EmailIcon />
+                            </InputAdornment>
+                        ),
+                    }}
+                    FormHelperTextProps={{ sx: { minHeight: '20px' } }}
                 />
+                {formikLogin.touched.email && !formikLogin.errors.email && <Box sx={{ minHeight: '11px' }}></Box>}
                 <TextField
                     sx={{
                         flex: 1
                     }}
-                    type="password"
-                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    label="Mật khẩu"
                     name="password"
                     value={formikLogin.values.password}
-                    onChange={formikLogin.handleChange}
+                    onChange={e => { formikLogin.handleChange(e); setError("") }}
                     onBlur={formikLogin.handleBlur}
                     error={formikLogin.touched.password && Boolean(formikLogin.errors.password)}
-                    helperText={formikLogin.touched.password && formikLogin.errors.password}
+                    helperText={formikLogin.touched.password ? formikLogin.errors.password : " "}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <LockIcon />
+                            </InputAdornment>
+                        ),
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                    FormHelperTextProps={{ sx: { minHeight: '20px' } }}
                 />
-                {error && <Typography component={"span"} color={"error"}>{error}</Typography>}
-                <Button onClick={() => formikLogin.submitForm()}>Đăng nhập</Button>
-                <Box>
-                    <IconButton onClick={() => loginWithSocial('facebook')}>
-                        <FacebookIcon />
-                    </IconButton>
-                    <IconButton onClick={() => loginWithSocial('google')}>
-                        <GoogleIcon />
-                    </IconButton>
-                </Box>
-                <Button onClick={() => navigate("/auth/register")}>Tạo tài khoản</Button>
-                <Button onClick={() => navigate("/auth/forgot-password")}>Quên mật khẩu</Button>
+                {formikLogin.touched.password && !formikLogin.errors.password && <Box sx={{ minHeight: '11px' }}></Box>}
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}>
+                    <Typography component={"span"} color={"error"}>{error}</Typography>
 
+                    <Link to={"/auth/forgot-password"} style={{
+                        color: 'blue',
+                        textDecoration: 'none'
+                    }}>Quên mật khẩu</Link>
+                </Box>
+                <ButtonGradient variant="contained" onClick={() => formikLogin.submitForm()}>Đăng nhập</ButtonGradient>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Typography>Hoặc đăng nhập với</Typography>
+                </Box>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    gap: '6px',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Tooltip title="facebook">
+                        <IconButton onClick={() => loginWithSocial('facebook')} size="large" >
+                            <FacebookIcon fontSize="large" sx={{ color: mode === 'light' ? "blue" : '' }} />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="google">
+                        <IconButton onClick={() => loginWithSocial('google')} size="large">
+                            <GoogleIcon fontSize="large" sx={{ color: mode === 'light' ? "red" : '' }} />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+                <Box sx={{
+                    width: '100%',
+                    mt: 2,
+                    display: 'flex',
+                    gap: '10px',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Typography>Bạn chưa có tài khoản?</Typography>
+                    <Link to={"/auth/register"} style={{
+                        color: 'blue',
+                        textDecoration: 'none'
+                    }}>Đăng ký ngay</Link>
+                </Box>
             </Box>
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

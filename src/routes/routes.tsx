@@ -18,6 +18,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import Category from "../pages/admin/categories/Category";
 import ProductUser from "../pages/user/products/Product";
 import ForgotPassword from "../pages/user/auth/ForgotPassword";
+import AuthLayout from "../layouts/common/AuthLayout";
 
 
 const adminRoutes = [
@@ -69,27 +70,27 @@ const publicRoutes = [
     },
     {
         path: '/auth/login',
-        element: <Login></Login>
+        element: <AuthLayout><Login/></AuthLayout>
     
     },
     {
         path: '/auth/login-success',
-        element: <LoginSuccess></LoginSuccess>
+        element: <LoginSuccess/>
     
     },
     {
         path: '/auth/register',
-        element: <Register></Register>
+        element: <AuthLayout><Register/></AuthLayout>
     
     },
     {
         path: '/auth/verify',
-        element: <VerifyEmail></VerifyEmail>
+        element:<AuthLayout><VerifyEmail/></AuthLayout>
     
     },
     {
         path: '/auth/forgot-password',
-        element: <ForgotPassword></ForgotPassword>
+        element: <AuthLayout><ForgotPassword/></AuthLayout>
     
     },
     {

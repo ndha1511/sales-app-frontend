@@ -1,4 +1,4 @@
-import { Button, Container } from "@mui/material";
+import { Box, Button, Container, TextField, Typography, useColorScheme, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { VerifyEmailDto } from "../../../dtos/requests/verify-email.dto";
@@ -8,6 +8,7 @@ import { verifyEmail } from "../../../services/auth.service";
 import { saveToken } from "../../../services/token.service";
 import { UserModel } from "../../../models/user.model";
 import { getUserByEmail, saveUserToLocalStorage } from "../../../services/user.service";
+import ButtonGradient from "../../../components/common/ButtonGradient";
 
 const VerifyEmail = () => {
     const navigate = useNavigate();
@@ -16,15 +17,21 @@ const VerifyEmail = () => {
     const email = queryParams.get('email');
     const [otp, setOtp] = useState("");
     const [error, setError] = useState("");
+    const { mode } = useColorScheme();
+    const isMobile: boolean = useMediaQuery('(max-width:768px)');
+    const isMedium: boolean = useMediaQuery('(max-width:980px)');
 
     useEffect(() => {
-        if(!email) {
+        if (!email) {
             navigate("/auth/register");
         }
     }, []);
 
     const hanlderSubmit = async () => {
-
+        if (!otp) {
+            setError("vui lòng nhập mã xác thực");
+            return;
+        }
         const verifyEmailDto: VerifyEmailDto = {
             email: email ?? "",
             otp
@@ -36,14 +43,61 @@ const VerifyEmail = () => {
             saveUserToLocalStorage(responseUser.data);
             navigate("/home");
         } catch (error) {
-            setError("Otp không chính xác")
+            setError("mã xác thực không chính xác")
         }
     }
     return (
-        <Container>
-            <input type="text" placeholder="Nhap ma xac nhan" onChange={(e) => setOtp(e.target.value)}/>
-            {error && <p style={{color:'red'}}>{error}</p>}
-            <Button variant="contained" color="primary" onClick={hanlderSubmit}>Xac nhan</Button>
+        <Container sx={{
+            height: '100vh',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        }}>
+
+            <Box sx={{
+                width: isMedium ? '65%' : '40%',
+                flexGrow: isMobile ? 1 : 0,
+                display: "flex",
+                justifyContent: 'center',
+                backgroundColor: mode === "dark" ? "common.black" : "common.white",
+                p: 3,
+                gap: '12px',
+                flexDirection: "column",
+                borderRadius: '12px'
+            }}>
+                <Box sx={{
+                    flex: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    mt: 1,
+                    mb: 1
+                }}>
+                    <Typography variant="h6" fontWeight={'bold'}>MÃ XÁC THỰC ĐÃ ĐƯỢC GỬI TỚI EMAIL CỦA BẠN</Typography>
+
+                </Box>
+                <TextField
+                    sx={{
+                        flex: 1
+                    }}
+                    label="Nhập mã xác thực"
+                    name="email"
+                    value={otp}
+                    onChange={(e) => {setOtp(e.target.value); setError("")}}
+                />
+                <Box sx={{
+                    flex: 1,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mt: 2
+                }}>
+                    <Typography color={"error"} component={"span"} sx={{ minHeight: '20px' }}>{error}</Typography>
+                    <Button>Gửi lại mã</Button>
+                </Box>
+
+                <ButtonGradient variant="contained" onClick={hanlderSubmit} sx={{ mt: 3 }}>Xác nhận</ButtonGradient>
+            </Box>
         </Container>
     )
 }

@@ -1,4 +1,4 @@
-import { AppBar, Badge, Box, Drawer, ListItemButton, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { AppBar, Avatar, Badge, Box, Drawer, ListItemButton, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import SearchInput from "../../components/common/search-input/SearchInput";
 import IconButtonGradient from "../../components/common/IconButtonGradient";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -8,11 +8,17 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { primaryGradient } from "../../theme";
 import MenuIcon from '@mui/icons-material/Menu';
 import NavBar from "../common/NavBar";
-import {useState } from "react";
+import { useState } from "react";
 import logoIcon from "../../assets/logo/logo-icon.png";
 import { userMenu } from "../common/Menu";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
+import { getUserFromLocalStorage, isLogin } from "../../services/user.service";
+import ButtonGradient from "../../components/common/ButtonGradient";
+import { UserModel } from "../../models/user.model";
+import { LoginResponse } from "../../dtos/responses/login-response";
+import { getToken } from "../../services/token.service";
+import { lougout, removeLocalStorage } from "../../services/auth.service";
 
 
 
@@ -20,23 +26,43 @@ const Header = () => {
     const location = useLocation();
     const isMobile: boolean = useMediaQuery('(max-width:600px)');
     const isMedium: boolean = useMediaQuery('(max-width:1150px)');
+    const login: boolean = isLogin();
+    const user: UserModel | null = getUserFromLocalStorage();
     const [open, setOpen] = useState(false);
     const [openChildItem, setOpenChildItem] = useState<{ [key: string]: boolean }>({});
     const cart = useSelector((state: RootState) => state.cart.items);
     const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const openMenu = Boolean(anchorEl);
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
     };
     const handleClick = (title: string) => {
         setOpenChildItem(prev => ({ ...prev, [title]: !prev[title] }));
     };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const handleClickAvatar = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
     const DrawerList = (
         <NavBar items={userMenu}></NavBar>
     );
 
-   
-
+    const handleLogout = async () => {
+        const token: LoginResponse | null = getToken();
+        if (token) {
+            try {
+                await lougout(token.accessToken);
+                removeLocalStorage();
+                navigate("/");
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
 
     return (
         <AppBar elevation={0} color="secondary" sx={{
@@ -72,21 +98,21 @@ const Header = () => {
                 {userMenu.map((item: any, index: number) => {
                     const isOpen = openChildItem[item.title] || false;
                     return (
-                    <ListItemButton key={index} component={Link} to={item.href} sx={{
-                        display: "flex",
-                        ':hover': {
-                            background: primaryGradient,
-                            color: 'white'
-                        },
-                        background: location.pathname.startsWith(item.href) ? primaryGradient : 'none',
-                        color: location.pathname.startsWith(item.href) ? 'white' : 'none',
-                        textDecoration: 'none',
-                        pl: 1, pr: 1,
+                        <ListItemButton key={index} component={Link} to={item.href} sx={{
+                            display: "flex",
+                            ':hover': {
+                                background: primaryGradient,
+                                color: 'white'
+                            },
+                            background: location.pathname.startsWith(item.href) ? primaryGradient : 'none',
+                            color: location.pathname.startsWith(item.href) ? 'white' : 'none',
+                            textDecoration: 'none',
+                            pl: 1, pr: 1,
 
-                    }} onClick={() => handleClick(item.title)}>
-                        <Typography>{item.title}</Typography>
-                        {item.child ? isOpen ? <ExpandLess /> : <ExpandMore /> : <></>}
-                    </ListItemButton>
+                        }} onClick={() => handleClick(item.title)}>
+                            <Typography>{item.title}</Typography>
+                            {item.child ? isOpen ? <ExpandLess /> : <ExpandMore /> : <></>}
+                        </ListItemButton>
                     )
                 })}
             </Box> : <></>}
@@ -111,11 +137,32 @@ const Header = () => {
                         </Badge>
                     </IconButtonGradient>
                 </Tooltip>
-                <Tooltip title="tài khoản">
-                    <IconButtonGradient>
-                        <AccountCircleIcon />
+                {login ? <><Tooltip title={user ? user.name : "tài khoản"}>
+                    <IconButtonGradient onClick={handleClickAvatar}>
+                        {user ? user.avatarUrl ?
+                            <Avatar alt={user.name} src={user.avatarUrl} sx={{
+                                width: 23,
+                                height: 23,
+                            }} />
+                            : <AccountCircleIcon /> : <></>}
                     </IconButtonGradient>
                 </Tooltip>
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={openMenu}
+                        onClose={handleClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
+                        <MenuItem>Thông tin cá nhân</MenuItem>
+                        <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+                    </Menu>
+                </> :
+                    <ButtonGradient variant="contained"
+                        onClick={() => navigate('/auth/login')}
+                    >Đăng nhập</ButtonGradient>}
             </Box>
         </AppBar>
     )
