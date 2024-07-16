@@ -161,7 +161,10 @@ const Header = () => {
                     </Menu>
                 </> :
                     <ButtonGradient variant="contained"
-                        onClick={() => navigate('/auth/login')}
+                        onClick={() => {  
+                            localStorage.setItem("historyPath", location.pathname);
+                            navigate('/auth/login', {state: { from: location.pathname}});
+                     }}
                     >Đăng nhập</ButtonGradient>}
             </Box>
         </AppBar>

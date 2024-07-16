@@ -13,6 +13,7 @@ const LoginSuccess = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const email = queryParams.get("email");
+    const historyPath = localStorage.getItem("historyPath");
     useEffect(() => {
         (async () => {
             const accessToken = getCookie('accessToken');
@@ -30,7 +31,8 @@ const LoginSuccess = () => {
                 } catch (error) {
                     navigate("/auth/login");
                 }
-                navigate("/home");
+                navigate(historyPath || "/home");
+                localStorage.removeItem("historyPath");
             } else {
                 navigate("/auth/login");
             }

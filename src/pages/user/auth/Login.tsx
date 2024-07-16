@@ -27,7 +27,7 @@ import { saveToken } from "../../../services/token.service";
 import { getUserByEmail, saveUserToLocalStorage } from "../../../services/user.service";
 import { UserModel } from "../../../models/user.model";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ButtonGradient from "../../../components/common/ButtonGradient";
 
 const validationLoginSchema = yup.object({
@@ -42,6 +42,7 @@ const Login = () => {
     const [error, setError] = useState("");
     const [open, setOpen] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const location = useLocation();
     const navigate = useNavigate();
     const formikLogin = useFormik({
         initialValues: {
@@ -56,7 +57,8 @@ const Login = () => {
                 saveToken(response.data);
                 const responseUser: ResponseSuccess<UserModel> = await getUserByEmail(values.email);
                 saveUserToLocalStorage(responseUser.data);
-                navigate("/home");
+                const from = location.state?.from || "/home";
+                navigate(from);
             } catch (error) {
                 setOpen(false);
                 localStorage.removeItem("token");
