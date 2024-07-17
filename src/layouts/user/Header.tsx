@@ -3,7 +3,6 @@ import SearchInput from "../../components/common/search-input/SearchInput";
 import IconButtonGradient from "../../components/common/IconButtonGradient";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { ExpandLess, ExpandMore, Notifications } from "@mui/icons-material";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { primaryGradient } from "../../theme";
 import MenuIcon from '@mui/icons-material/Menu';
@@ -139,12 +138,11 @@ const Header = () => {
                 </Tooltip>
                 {login ? <><Tooltip title={user ? user.name : "tài khoản"}>
                     <IconButtonGradient onClick={handleClickAvatar}>
-                        {user ? user.avatarUrl ?
-                            <Avatar alt={user.name} src={user.avatarUrl} sx={{
+                            <Avatar alt={user?.name} src={user?.avatarUrl} sx={{
                                 width: 23,
                                 height: 23,
                             }} />
-                            : <AccountCircleIcon /> : <></>}
+                         <></>
                     </IconButtonGradient>
                 </Tooltip>
                     <Menu

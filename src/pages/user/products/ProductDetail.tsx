@@ -65,12 +65,9 @@ const SizeColorBox = ({ text, changeActive, index, activeIndex }: SizeColorProps
 }
 
 const ProductDetail = () => {
-
     const { id } = useParams();
-
     const [product, setProduct] = useState<ProductModel>();
     const dispatch = useDispatch();
-
     const [productImages, setProductImages] = useState<ProductImageModel[]>([]);
     const [productDetails, setProductDetails] = useState<ProductDetailModel[]>([]);
     const [colors, setColors] = useState<ColorModel[]>([]);

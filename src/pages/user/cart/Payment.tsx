@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from 'yup';
 import { UserModel } from "../../../models/user.model";
@@ -7,15 +7,20 @@ import { DeliveryMethod, OrderDto, PaymentMethod } from "../../../dtos/requests/
 import { CartItemModel } from "../../../models/cart-item.model";
 import { getCartLocalStorage } from "../../../utils/cart-handle";
 import { createOrder } from "../../../services/order.service";
+import { useState } from "react";
+import { VoucherModel } from "../../../models/voucher.model";
+import { ResponseSuccess } from "../../../dtos/responses/response.success";
+import { getVouchersByEmail } from "../../../services/voucher.service";
+import Voucher from "./Voucher";
 
-const addressSchema = yup.object().shape({
-    street: yup.string()
-        .required('Street is required'),
-    district: yup.string()
-        .required('District is required'),
-    city: yup.string()
-        .required('City is required')
-});
+// const addressSchema = yup.object().shape({
+//     street: yup.string()
+//         .required('Street is required'),
+//     district: yup.string()
+//         .required('District is required'),
+//     city: yup.string()
+//         .required('City is required')
+// });
 
 const validationOrderSchema = yup.object({
     phoneNumber: yup.string().required("Vui lòng nhập số điện thoại nhận hàng")
@@ -26,6 +31,36 @@ const validationOrderSchema = yup.object({
 const Payment = () => {
     const user: UserModel | null = getUserFromLocalStorage();
     const cart: CartItemModel[] = getCartLocalStorage();
+    const [openDialog, setOpenDialog] = useState(false);
+    const [vouchers, setVouchers] = useState<VoucherModel[]>([]);
+    const [vouchersApply, setVouchersApply] = useState<VoucherModel[]>([]);
+
+    const handleClose = () => {
+        setOpenDialog(false);
+    }
+
+    const addVoucher = (voucher: VoucherModel) => {
+        const index = vouchersApply.findIndex((v) => v.id === voucher.id);
+        if (index === -1) {
+            setVouchersApply([...vouchersApply, voucher]);
+        } 
+    }
+
+    const handleOpen = async () => {
+        if(vouchers.length <= 0) {
+            try {
+                const response : ResponseSuccess<VoucherModel[]> = await getVouchersByEmail(user?.email);
+                setVouchers(response.data);
+                console.log(response.data);
+                setOpenDialog(true);
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            setOpenDialog(true);
+        }
+    }
+
     const formikPayment = useFormik({
         initialValues: {
             email: user?.email || '',
@@ -44,11 +79,12 @@ const Payment = () => {
                     productDetailId: item.productDetail.id || 0,
                     quantity: item.quantity,
                 }
-            })
+            }),
+            vouchers: vouchersApply.map((voucher) => voucher.id)
         },
         validationSchema: validationOrderSchema,
         onSubmit: async (values: OrderDto) => {
-            console.log(values);
+            values.vouchers = vouchersApply.map((voucher) => voucher.id);
             await createOrder(values);
             alert('đặt hàng thành công');
             localStorage.removeItem("cart");
@@ -94,7 +130,7 @@ const Payment = () => {
                 value={formikPayment.values.address.street}
                 onChange={(e) => { formikPayment.handleChange(e) }}
                 onBlur={formikPayment.handleBlur}
-               
+
             />
             <TextField
                 sx={{
@@ -105,7 +141,7 @@ const Payment = () => {
                 value={formikPayment.values.address.district}
                 onChange={(e) => { formikPayment.handleChange(e) }}
                 onBlur={formikPayment.handleBlur}
-            
+
             />
             <TextField
                 sx={{
@@ -116,7 +152,7 @@ const Payment = () => {
                 value={formikPayment.values.address.city}
                 onChange={(e) => { formikPayment.handleChange(e) }}
                 onBlur={formikPayment.handleBlur}
-               
+
             />
             <FormControl sx={{
                 mb: 2,
@@ -150,7 +186,24 @@ const Payment = () => {
                     <MenuItem value={DeliveryMethod.ECONOMY}>Giao hàng tiết kiệm</MenuItem>
                 </Select>
             </FormControl>
+            <Button onClick={handleOpen}>Chọn mã giảm giá</Button>
             <Button onClick={() => formikPayment.submitForm()}>Đặt hàng</Button>
+            <Dialog
+                open={openDialog}
+                keepMounted
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle>{"Mã giảm giá của bạn"}</DialogTitle>
+                <DialogContent>
+                    {vouchers.map((voucher: VoucherModel) => (
+                        <Voucher key={voucher.id} voucher={voucher} addVoucher={addVoucher} voucherApply={vouchersApply}/>
+                    ))}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Disagree</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     )
 }
