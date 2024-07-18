@@ -10,6 +10,8 @@ import { store } from './redux/store/store.ts';
 import { router } from './routes/routes.tsx';
 
 
+
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <ProviderRedux store={store}>

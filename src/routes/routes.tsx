@@ -19,32 +19,33 @@ import Category from "../pages/admin/categories/Category";
 import ProductUser from "../pages/user/products/Product";
 import ForgotPassword from "../pages/user/auth/ForgotPassword";
 import AuthLayout from "../layouts/common/AuthLayout";
+import App from "../App";
 
 
 const adminRoutes = [
     {
         path: '/admin/dashboard',
-        element: <ProtectRoutes role={Role.ROLE_ADMIN}><AdminLayout><Dashboard /></AdminLayout></ProtectRoutes>
+        element: <Dashboard />
     },
     {
         path: '/admin/product',
-        element: <ProtectRoutes role={Role.ROLE_ADMIN}><AdminLayout><Product /></AdminLayout></ProtectRoutes>
+        element: <Product />
     },
     {
         path: '/admin/product/create',
-        element: <ProtectRoutes role={Role.ROLE_ADMIN}><AdminLayout><CreateProduct /></AdminLayout></ProtectRoutes>
+        element: <CreateProduct />
     },
     {
         path: '/admin/product/update/:id',
-        element: <ProtectRoutes role={Role.ROLE_ADMIN}><AdminLayout><UpdateProduct /></AdminLayout></ProtectRoutes>
+        element: <UpdateProduct />
     },
     {
         path: '/admin/product/category',
-        element: <ProtectRoutes role={Role.ROLE_ADMIN}><AdminLayout><Category/></AdminLayout></ProtectRoutes>
+        element: <Category/>
     },
     {
         path: '/admin/product/provider',
-        element: <ProtectRoutes role={Role.ROLE_ADMIN}><AdminLayout><Provider/></AdminLayout></ProtectRoutes>
+        element: <Provider/>
     },
 ]
 
@@ -68,6 +69,14 @@ const publicRoutes = [
         element: <Navigate to={"/home"}></Navigate>
     
     },
+    {
+        path: '/products',
+        element: <UserLayout><ProductUser/></UserLayout>
+    
+    }
+]
+
+const authRoutes = [
     {
         path: '/auth/login',
         element: <AuthLayout><Login/></AuthLayout>
@@ -93,17 +102,29 @@ const publicRoutes = [
         element: <AuthLayout><ForgotPassword/></AuthLayout>
     
     },
-    {
-        path: '/products',
-        element: <UserLayout><ProductUser/></UserLayout>
-    
-    }
 ]
+
+const adminRoutesRs = adminRoutes.map((route) => {
+    return {
+        ...route,
+        element: <App><ProtectRoutes role={Role.ROLE_ADMIN}><AdminLayout>{route.element}</AdminLayout></ProtectRoutes></App>
+    }
+}
+);
+
+const publicRoutesRs = publicRoutes.map((route) => {
+    return {
+        path: route.path,
+        element: <App>{route.element}</App>
+    }
+});
+
 
 
 export const router = createBrowserRouter([
-    ...adminRoutes,
-    ...publicRoutes,
-    ...userRoutes
+    ...adminRoutesRs,
+    ...publicRoutesRs,
+    ...userRoutes,
+    ...authRoutes
     
 ]);

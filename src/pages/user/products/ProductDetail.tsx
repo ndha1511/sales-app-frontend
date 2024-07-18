@@ -16,6 +16,13 @@ import { useDispatch } from "react-redux";
 import { updateCartState } from "../../../redux/reducers/cart-reducer";
 import QuantityProduct from "../../../components/user/quantity-product/QuantityProduct";
 import ListImage from "../../../components/user/list-image/ListImage";
+import { connect, isConnected, stompClient } from "../../../configurations/websocket.config";
+import { Message } from "stompjs";
+import CommentForm from "../../../components/common/comments/CommentForm";
+import { CommentResponse } from "../../../dtos/responses/comment-response";
+import CommentView from "../../../components/common/comments/CommentView";
+import { getPageCommentsByProductId } from "../../../services/comment.service";
+import { PageResponse } from "../../../dtos/responses/page-response";
 
 type SizeColorProps = {
     text: string;
@@ -76,7 +83,8 @@ const ProductDetail = () => {
     const [activeColor, setActiveColor] = useState<number>(0);
     const [quantityInStock, setQuantityInStock] = useState<number>(0);
     const [buyQuantity, setBuyQuantity] = useState<number>(1);
-
+    const [comments, setComments] = useState<CommentResponse[]>([]);
+    
     const changeActiveSize = (index: number) => {
         setActiveSize(index);
     }
@@ -84,6 +92,49 @@ const ProductDetail = () => {
     const changeActiveColor = (index: number) => {
         setActiveColor(index);
     }
+
+    useEffect(() => {
+        if(!isConnected()) {
+            connect(onConnected, onError);
+        }
+        else if(stompClient) {
+            stompClient.subscribe(`/topic/product/${id}`, onMessageReceived, {id: id});
+        }
+        return () => {
+            if(isConnected() && stompClient) {
+                stompClient.unsubscribe(`${id}`);
+            }
+        }
+    }, [stompClient]);
+
+    useEffect(() => {
+        (async () => {
+           try {
+                const response : ResponseSuccess<PageResponse<CommentResponse[]>> = await getPageCommentsByProductId(1, 10, Number(id));
+                setComments(response.data.data);
+           } catch (error) {
+                console.log(error);
+           }
+        } )();
+    }, []);
+
+    const onMessageReceived = (message: Message) => {
+        const commentData : CommentResponse = JSON.parse(message.body);
+        setComments(prev => [commentData, ...prev]);
+    }
+
+    const onConnected = () => {
+        console.log("Connected to websocket server product detail");
+        if(isConnected() && stompClient) {
+            stompClient.subscribe(`/topic/product/${id}`, onMessageReceived, {id: id});
+        }
+    }
+
+    const onError = () => {
+        console.log("Error connecting to websocket server");
+    }
+
+
 
 
     useEffect(() => {
@@ -262,7 +313,12 @@ const ProductDetail = () => {
                 </Box>
             </Box>
             <Typography sx={{ mt: 2 }} variant="h6">Đánh giá</Typography>
-            <Box></Box>
+            <Box>
+                <CommentForm productId={Number(id)}></CommentForm>
+                {comments.map((comment) => 
+                    <CommentView commentResponse={comment} key={comment.comment.id}/>
+                )}
+            </Box>
             <Typography sx={{ mt: 2 }} variant="h6">Các sản phẩm tương tự</Typography>
             <Box></Box>
         </Container>
