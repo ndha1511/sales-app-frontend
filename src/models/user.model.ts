@@ -9,6 +9,7 @@ export enum Role {
     ROLE_ADMIN = "ROLE_ADMIN",
 }
 export type UserModel = {
+    id: number;
     name: string;
     email: string;
     phoneNumber?: string;

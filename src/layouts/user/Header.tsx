@@ -30,9 +30,12 @@ const Header = () => {
     const [open, setOpen] = useState(false);
     const [openChildItem, setOpenChildItem] = useState<{ [key: string]: boolean }>({});
     const cart = useSelector((state: RootState) => state.cart.items);
+    const notifications = useSelector((state: RootState) => state.notification.items);
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [anchorE2, setAnchorE2] = useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
+    const openE2 = Boolean(anchorE2);
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
     };
@@ -42,8 +45,14 @@ const Header = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+    const handleClose2 = () => {
+        setAnchorE2(null);
+    };
     const handleClickAvatar = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
+    };
+    const handleClickNotify = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorE2(event.currentTarget);
     };
 
     const DrawerList = (
@@ -130,19 +139,33 @@ const Header = () => {
                     </IconButtonGradient>
                 </Tooltip>
                 <Tooltip title="thông báo">
-                    <IconButtonGradient>
-                        <Badge badgeContent={4} color="primary">
+                    <IconButtonGradient onClick={handleClickNotify}>
+                        <Badge badgeContent={notifications.length} color="primary">
                             <Notifications fontSize="small" />
                         </Badge>
                     </IconButtonGradient>
                 </Tooltip>
+                <Menu
+                    id="basic-menu"
+                    anchorEl={anchorE2}
+                    open={openE2}
+                    onClose={handleClose2}
+                    MenuListProps={{
+                        'aria-labelledby': 'basic-button',
+                    }}
+                >
+                    {notifications.map((notification) =>
+                        <MenuItem key={notification.id}>
+                            {notification.content}
+                        </MenuItem>)}
+                </Menu>
                 {login ? <><Tooltip title={user ? user.name : "tài khoản"}>
                     <IconButtonGradient onClick={handleClickAvatar}>
-                            <Avatar alt={user?.name} src={user?.avatarUrl} sx={{
-                                width: 23,
-                                height: 23,
-                            }} />
-                         <></>
+                        <Avatar alt={user?.name} src={user?.avatarUrl} sx={{
+                            width: 23,
+                            height: 23,
+                        }} />
+                        <></>
                     </IconButtonGradient>
                 </Tooltip>
                     <Menu
@@ -159,10 +182,10 @@ const Header = () => {
                     </Menu>
                 </> :
                     <ButtonGradient variant="contained"
-                        onClick={() => {  
+                        onClick={() => {
                             localStorage.setItem("historyPath", location.pathname);
-                            navigate('/auth/login', {state: { from: location.pathname}});
-                     }}
+                            navigate('/auth/login', { state: { from: location.pathname } });
+                        }}
                     >Đăng nhập</ButtonGradient>}
             </Box>
         </AppBar>

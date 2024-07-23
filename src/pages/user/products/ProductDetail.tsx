@@ -242,7 +242,7 @@ const ProductDetail = () => {
                         </Typography>
                     </Box>
                     {product?.avgRating ? <Box sx={{ display: 'flex', gap: '5px' }}>
-                        <Rating name="read-only" value={product.avgRating} readOnly />
+                        <Rating name="read-only" value={product.avgRating} precision={0.5} readOnly />
                         <Typography sx={{ color: 'blue' }}>{product.numberOfRating + ' đánh giá'}</Typography>
                     </Box> :
                         <Typography>Chưa có đánh giá</Typography>}
