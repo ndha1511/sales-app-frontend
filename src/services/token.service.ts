@@ -11,3 +11,4 @@ export const getToken = (): LoginResponse | null => {
     }
     return null;
 }
+

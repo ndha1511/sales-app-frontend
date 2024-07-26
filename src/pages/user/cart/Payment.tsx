@@ -12,6 +12,8 @@ import { VoucherModel } from "../../../models/voucher.model";
 import { ResponseSuccess } from "../../../dtos/responses/response.success";
 import { getVouchersByEmail } from "../../../services/voucher.service";
 import Voucher from "./Voucher";
+import { OrderModel } from "../../../models/order.model";
+import { getVnpPaymentUrl } from "../../../services/payment.service";
 
 // const addressSchema = yup.object().shape({
 //     street: yup.string()
@@ -85,7 +87,13 @@ const Payment = () => {
         validationSchema: validationOrderSchema,
         onSubmit: async (values: OrderDto) => {
             values.vouchers = vouchersApply.map((voucher) => voucher.id);
-            await createOrder(values);
+            const response: ResponseSuccess<OrderModel> = await createOrder(values);
+            const order :OrderModel = response.data;
+            if(order.paymentMethod === PaymentMethod.CC) {
+                alert('Đã đặt hàng thành công, vui lòng chuyển tiền qua đây: ');
+                const paymentUrl :string = (await getVnpPaymentUrl(order.discountedAmount)).data;
+                location.href = paymentUrl;
+            }
             alert('đặt hàng thành công');
             localStorage.removeItem("cart");
             window.location.href = '/home';

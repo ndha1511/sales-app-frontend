@@ -20,6 +20,7 @@ import ProductUser from "../pages/user/products/Product";
 import ForgotPassword from "../pages/user/auth/ForgotPassword";
 import AuthLayout from "../layouts/common/AuthLayout";
 import App from "../App";
+import PaymentSuccess from "../pages/user/cart/PaymentSuccess";
 
 
 const adminRoutes = [
@@ -73,7 +74,11 @@ const publicRoutes = [
         path: '/products',
         element: <UserLayout><ProductUser/></UserLayout>
     
-    }
+    },
+    {
+        path: '/payment/success',
+        element: <UserLayout><PaymentSuccess/></UserLayout>
+    },
 ]
 
 const authRoutes = [

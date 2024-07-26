@@ -21,6 +21,20 @@ export const login = async (loginRequestDto: LoginRequestDto): Promise<ResponseS
     }
 }
 
+export const refreshToken = async (refreshToken?: string): Promise<ResponseSuccess<LoginResponse>> => {
+    try {
+        const response = await requestConfig(
+            `auth/refresh-token`,
+            Method.POST,
+            refreshToken,
+            ContentType.TEXT_PLAIN
+        );
+        return response.data;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
 export const register = async (userRegisterDto: UserRegisterDto): Promise<ResponseSuccess<string>> => {
     try {
         const response = await requestConfig(
