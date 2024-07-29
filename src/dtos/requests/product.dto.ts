@@ -1,3 +1,5 @@
+import { Status } from "../../models/enums/status.enum";
+
 export type ProductDto = {
     productName?: string;
     price?: number;
@@ -6,4 +8,5 @@ export type ProductDto = {
     categoryId?: number | string;
     providerId?: number | string;
     images?: File[];
+    status?: Status;
 }

@@ -9,7 +9,23 @@ export const createProductDetail = async (productDetailDto: ProductDetailDto): P
             'product-details',
             Method.POST,
             productDetailDto,
-            ContentType.JSON
+            ContentType.JSON,
+            true
+        );
+        return response.data;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+export const removeProductDetail = async (id: number): Promise<ResponseSuccess<string>> => {
+    try {
+        const response = await requestConfig(
+            `product-details/${id}`,
+            Method.DELETE,
+            [],
+            ContentType.JSON,
+            true
         );
         return response.data;
     } catch (error) {
