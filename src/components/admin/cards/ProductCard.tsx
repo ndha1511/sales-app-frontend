@@ -1,6 +1,7 @@
 import { Card, CardActions, CardContent, CardMedia, Fab, Typography, useMediaQuery } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { convertPrice } from "../../../utils/convert-price";
 
 type Props = {
     productId: number,
@@ -27,7 +28,7 @@ const ProductCard = ({ productId, productName, productPrice, fNavigate, thumbnai
                     {productName}
                 </Typography>
                 <Typography color="text.secondary">
-                    {productPrice}
+                    {convertPrice(productPrice)}
                 </Typography>
             </CardContent>
             <CardActions sx={{

@@ -29,37 +29,37 @@ const requestConfig = <T>(endpoint: string, method: Method, data: T, contentType
         headers
     });
     if (interceptor) {
-            instance.interceptors.request.use(config => {
+        instance.interceptors.request.use(config => {
+            const loginResponse: LoginResponse | null = getToken();
+            config.headers.Authorization = `Bearer ${loginResponse?.accessToken}`
+            return config;
+        }, error => {
+            return Promise.reject(error);
+        });
+        instance.interceptors.response.use(function (response) {
+            return response;
+        }, async function (error) {
+            const originalConfig = error.config;
+            if (error.response && error.response.status === 401) {
+                console.log("token expired, refresh token will be");
                 const loginResponse: LoginResponse | null = getToken();
-                config.headers.Authorization = `Bearer ${loginResponse?.accessToken}`
-                return config;
-            }, error => {
-                return Promise.reject(error);
-            });
-            instance.interceptors.response.use(function (response) {
-                return response;
-            }, async function (error) {
-                const originalConfig = error.config;
-                if (error.response && error.response.status === 401) {
-                    console.log("token expired, refresh token will be");
-                    const loginResponse: LoginResponse | null = getToken();
-                    try {
-                        const response: ResponseSuccess<LoginResponse> = await refreshToken(loginResponse?.refreshToken);
-                        const newToken: LoginResponse = response.data;
-                        saveToken(newToken);
-                        console.log("refresh token successfully new token: ", newToken.accessToken);
-                        originalConfig.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
-                        return instance(originalConfig); 
-                   } catch (error) {
-                        console.log(error);
-                        console.log("refresh token failed");
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
-                        location.href = '/auth/login';
-                    }   
+                try {
+                    const response: ResponseSuccess<LoginResponse> = await refreshToken(loginResponse?.refreshToken);
+                    const newToken: LoginResponse = response.data;
+                    saveToken(newToken);
+                    console.log("refresh token successfully new token: ", newToken.accessToken);
+                    originalConfig.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
+                    return instance(originalConfig);
+                } catch (error) {
+                    console.log(error);
+                    console.log("refresh token failed");
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    location.href = '/auth/login';
                 }
-            });
-        
+            } 
+        });
+
     }
 
     return instance.request(

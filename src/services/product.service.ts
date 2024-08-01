@@ -51,7 +51,7 @@ export const getAllProducts = async (): Promise<ResponseSuccess<ProductModel[]>>
     }
 }
 
-export const getPageProducts = async (pageNo: number = 1, pageSize: number = 20, search: {
+export const getPageProducts = async (pageNo: number = 1, pageSize: number = 40, search: {
     field: string;
     operator: string;
     value: string;

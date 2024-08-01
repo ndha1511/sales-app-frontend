@@ -16,7 +16,7 @@ const Product = () => {
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
-             const response = await getPageProducts(pageNoState, 3);
+             const response = await getPageProducts(pageNoState);
              console.log(response);
              if (response.status === 200) {
                   setProductSales(response.data.data);
