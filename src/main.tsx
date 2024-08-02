@@ -8,17 +8,20 @@ import { RouterProvider } from "react-router-dom";
 import { Provider as ProviderRedux } from 'react-redux'
 import { store } from './redux/store/store.ts';
 import { router } from './routes/routes.tsx';
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <ProviderRedux store={store}>
-            <CssVarsProvider theme={theme}>
-                <CssBaseline />
-                <RouterProvider router={router} />
-            </CssVarsProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <CssVarsProvider theme={theme}>
+                    <CssBaseline />
+                    <RouterProvider router={router} />
+                </CssVarsProvider>
+            </LocalizationProvider>
         </ProviderRedux>
     </React.StrictMode>,
 )

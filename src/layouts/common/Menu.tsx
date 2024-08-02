@@ -41,27 +41,27 @@ export const adminMenu = [
     {
         title: 'Khách hàng',
         icon: <GroupIcon />,
-        href: '/admin/dashboard/1'
+        href: '/admin/customer'
     },
     {
         title: 'Hóa đơn',
         icon: <BackupTable />,
-        href: '/admin/dashboard/1'
+        href: '/admin/order'
     },
     {
         title: 'Tin nhắn',
         icon: <MessageIcon />,
-        href: '/admin/dashboard/1'
+        href: '/admin/message'
     },
     {
         title: 'Khuyến mãi',
         icon: <BookmarkIcon />,
-        href: '/admin/dashboard/1'
+        href: '/admin/coupon'
     },
     {
         title: 'Thống kê',
         icon: <Equalizer />,
-        href: '/admin/dashboard/1'
+        href: '/admin/statistics'
     }
 ];
 
@@ -73,16 +73,6 @@ export const userMenu = [
     {
         title: 'Sản phẩm',
         href: '/products',
-        child: [
-            {
-                title: 'Sản phẩm mới',
-                href: '/products/new',
-            },
-            {
-                title: 'Sản phẩm bán chạy',
-                href: '/products/hot',
-            }
-        ]
     },
     {
         title: 'Khuyến mãi',

@@ -130,7 +130,7 @@ const Product = () => {
                         setCategoryName(searchArray[i].value);
                     } else if (searchArray[i].field.startsWith("provider")) {
                         setProviderName(searchArray[i].value);
-                    } else if (searchArray[i].field.startsWith("status")) {
+                    } else if (searchArray[i].field.startsWith("productStatus")) {
                         setStatus(searchArray[i].value);
                     }
                 }
@@ -187,7 +187,12 @@ const Product = () => {
             flexWrap: "wrap",
             gap: '25px'
         }}>
-            <Box><SearchInput placeHolder={"Nhập tên sản phẩm"} handleSearch={handleSearch} /></Box>
+            <Box sx={{
+                display: 'flex',
+                gap: '15px',
+                flexWrap: "wrap",
+            }}><SearchInput placeHolder={"Nhập tên sản phẩm"} handleSearch={handleSearch} />
+            </Box>
             <Box sx={{
                 display: 'flex',
                 gap: '15px',
@@ -196,9 +201,9 @@ const Product = () => {
                 <FormControl sx={{
                     minWidth: '120px'
                 }}>
-                    <InputLabel id="status">Trạng thái</InputLabel>
-                    <Select labelId="status"
-                        name="status"
+                    <InputLabel id="productStatus">Trạng thái</InputLabel>
+                    <Select labelId="productStatus"
+                        name="productStatus"
                         label="Trạng thái" size={"small"} value={status} onChange={e => changeSelect(e, setStatus)}>
                         <MenuItem value="ALL">--.--</MenuItem>
                         <MenuItem value="ACTIVE">Đang kinh doanh</MenuItem>

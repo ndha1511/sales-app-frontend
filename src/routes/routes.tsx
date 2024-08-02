@@ -21,6 +21,7 @@ import ForgotPassword from "../pages/user/auth/ForgotPassword";
 import AuthLayout from "../layouts/common/AuthLayout";
 import App from "../App";
 import PaymentSuccess from "../pages/user/cart/PaymentSuccess";
+import Order from "../pages/admin/orders/Order";
 
 
 const adminRoutes = [
@@ -47,6 +48,10 @@ const adminRoutes = [
     {
         path: '/admin/product/provider',
         element: <Provider/>
+    },
+    {
+        path: '/admin/order',
+        element: <Order/>
     },
 ]
 
