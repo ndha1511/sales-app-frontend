@@ -1,43 +1,62 @@
-import { Box, Button, Container, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import Carousel from "../../../components/user/carousels/Carousel";
-import ProductCard from "../../../components/user/cards/ProductCard";
 import { useEffect, useState } from "react";
-import {getPageProducts } from "../../../services/product.service";
+import { getPageProducts } from "../../../services/product.service";
 import { ProductUserResponse } from "../../../dtos/responses/product-user-response";
+import ListProduct from "../products/ListProduct";
 
 
 const Home = () => {
      const [productSales, setProductSales] = useState<ProductUserResponse[]>([]);
+     const [bestSellingProducts, setBestSellingProducts] = useState<ProductUserResponse[]>([]);
 
      useEffect(() => {
           const fetchData = async () => {
-               const response = await getPageProducts();
+               window.scrollTo({ top: 0, behavior: 'smooth' });
+               const response = await getPageProducts(1, 20);
                if (response.status === 200) {
                     setProductSales(response.data.data);
                }
           };
           fetchData();
      }, []);
-     const isMobile: boolean = useMediaQuery('(max-width:600px)');
      return (
           <Box sx={{ width: '100%' }}>
-               <Carousel></Carousel>
-               {productSales.length > 0 && <Container>
-                    <Typography>Khuyến mãi hot</Typography>
-                    <Box sx={{
-                         display: 'flex',
-                         gap: '30px',
-                         flexWrap: 'wrap',
-                         justifyContent: 'center'
-                    }}>
-                         {productSales.map((product: ProductUserResponse) => (
-                              <Box key={product.product.id} sx={{ flexBasis: isMobile ? '100px' : '250px', flexGrow: 1, maxWidth: isMobile ? '150px' : '250px' }}>
-                                   <ProductCard product={product}></ProductCard>
-                              </Box>
-                         ))}
+               <Carousel>
+                    <Button variant="outlined" size="large" color="inherit">MUA NGAY</Button>
+               </Carousel>
+               <Container sx={{
+                    mt: 2,
+                    display: 'flex',
+                    gap: '20px',
+                    flexDirection: 'column',
+                    mb: 4
+               }}>
+                    <Box>
+                         {productSales.length > 0 &&
+                              <ListProduct products={productSales} title="Khuyến mãi hot" applyCss={true} />
+                         }
+                         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                              <Button variant="contained" color="inherit">Xem thêm</Button>
+                         </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}><Button>Xem thêm</Button></Box>
-               </Container>}
+                    <Box>
+                         {productSales.length > 0 &&
+                              <ListProduct products={productSales} title="Sản phẩm bán chạy" applyCss={true} />
+                         }
+                         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                              <Button variant="contained" color="inherit">Xem thêm</Button>
+                         </Box>
+                    </Box>
+                    <Box>
+                         {productSales.length > 0 &&
+                              <ListProduct products={productSales} title="Sản phẩm được nhiều người đánh giá" applyCss={true} />
+                         }
+                         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                              <Button variant="contained" color="inherit">Xem thêm</Button>
+                         </Box>
+                    </Box>
+               </Container>
 
           </Box>
      )

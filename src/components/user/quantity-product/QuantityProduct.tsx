@@ -52,27 +52,46 @@ const QuantityProduct = ({ quantity, setQuantity, maxValue, cartItem }: Props) =
 
     return (
         <Box sx={{
-            display: 'flex'
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.875rem', 
         }}>
-            <Button onClick={(e) => decreasement(e)}>
-                <RemoveIcon />
+            <Button 
+                variant="outlined"
+                onClick={(e) => decreasement(e)} 
+                size="small" 
+                sx={{ p: 0.5 }} // Giảm padding để làm nút nhỏ hơn
+            >
+                <RemoveIcon fontSize="small" />
             </Button>
             <TextField
-            sx={{
-                width: '50%'
-            }}
-                InputProps={{
-                    sx: {
-                        width: '100%',
-
-                        '& .MuiInputBase-input': {
-                            textAlign: 'center',
-                        }
+                sx={{
+                    width: '60px', // Giảm kích thước TextField
+                    '& .MuiInputBase-input': {
+                        textAlign: 'center',
+                        fontSize: '0.875rem', // Giảm kích thước font
                     }
                 }}
-                variant="outlined" type="number" value={quantity} onChange={(e) => changeInput(e)} onBlur={(e) => blurInput(e)} />
-            <Button onClick={(e) => increasement(e)}>
-                <AddIcon />
+                InputProps={{
+                    sx: {
+                        padding: '0px', // Loại bỏ padding bên trong
+                        height: '32px', // Giảm chiều cao TextField
+                    }
+                }}
+                variant="outlined"
+                type="number"
+                value={quantity}
+                onChange={(e) => changeInput(e)}
+                onBlur={(e) => blurInput(e)}
+            />
+            <Button 
+                variant="outlined"
+                onClick={(e) => increasement(e)} 
+                size="small" 
+                sx={{ p: 0.5 }} // Giảm padding để làm nút nhỏ hơn
+            >
+                <AddIcon fontSize="small" />
             </Button>
         </Box>
     )

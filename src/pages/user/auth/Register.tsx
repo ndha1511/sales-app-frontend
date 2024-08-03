@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, Container, IconButton, InputAdornment, TextField, Typography, useColorScheme, useMediaQuery } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Container, IconButton, InputAdornment, TextField, Typography, useMediaQuery } from "@mui/material";
 import { UserRegisterDto } from "../../../dtos/requests/user-register.dto";
 import * as yup from 'yup';
 import { useFormik } from "formik";
@@ -33,7 +33,6 @@ const validationRegisterSchema = yup.object({
 });
 
 const Register = () => {
-    const { mode } = useColorScheme();
     const isMobile: boolean = useMediaQuery('(max-width:768px)');
     const isMedium: boolean = useMediaQuery('(max-width:980px)');
     const [errorEmail, setErrorEmail] = useState("");
@@ -76,7 +75,7 @@ const Register = () => {
                 flexGrow: isMobile ? 1 : 0,
                 display: "flex",
                 justifyContent: 'center',
-                backgroundColor: mode === "dark" ? "common.black" : "common.white",
+                backgroundColor: "common.black",
                 p: 3,
                 gap: '12px',
                 flexDirection: "column",

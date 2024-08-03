@@ -18,42 +18,50 @@ import QuantityProduct from "../../../components/user/quantity-product/QuantityP
 import ListImage from "../../../components/user/list-image/ListImage";
 import { connect, isConnected, stompClient } from "../../../configurations/websocket.config";
 import { Message } from "stompjs";
-import CommentForm from "../../../components/common/comments/CommentForm";
 import { CommentResponse } from "../../../dtos/responses/comment-response";
 import CommentView from "../../../components/common/comments/CommentView";
 import { getPageCommentsByProductId } from "../../../services/comment.service";
 import { PageResponse } from "../../../dtos/responses/page-response";
+import { green } from "@mui/material/colors";
 
 type SizeColorProps = {
     text: string;
     changeActive: (index: number) => void;
     index: number;
     activeIndex: number;
+    color?: string;
+    sx?: object;
 }
 
-const SizeColorBox = ({ text, changeActive, index, activeIndex }: SizeColorProps) => {
+const SizeColorBox = ({ text, changeActive, index, activeIndex, color, sx }: SizeColorProps) => {
     return (
-        <Box sx={{
-            p: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#fff',
-            textAlign: 'center',
-            color: 'black',
-            borderRadius: '10px',
-            position: 'relative',
-            cursor: 'pointer',
-            border: '1px solid black',
-            flexGrow: 1,
-            maxWidth: '150px',
-            '&:hover': {
-                background: '#f0f0f0',
-            }
-        }}
+        <Box 
+            sx={{
+                p: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: color ? color : '#fff',
+                textAlign: 'center',
+                color: 'black',
+                borderRadius: color ? '50%' : '10px',
+                position: 'relative',
+                cursor: 'pointer',
+                border: '3px solid white',
+                flexGrow: 1,
+                maxWidth: '40px',
+                minWidth: '40px',
+                maxHeight: '40px',
+                minHeight: '40px',
+                '&:hover': {
+                    opacity: 0.8,
+                    transform: 'scale(1.05)',
+                },
+                ...sx,
+            }}
             onClick={() => changeActive(index)}
         >
-            <Typography>{text}</Typography>
+            <Typography>{color ? '' : text}</Typography>
             {index === activeIndex && <Box sx={{
                 position: 'absolute',
                 top: 0,
@@ -62,10 +70,9 @@ const SizeColorBox = ({ text, changeActive, index, activeIndex }: SizeColorProps
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100%',
-                color: 'green',
-
+                color: green[400],
             }}>
-                <DoneIcon/>
+                <DoneIcon fontSize="medium"/>
             </Box>}
         </Box>
     )
@@ -84,7 +91,7 @@ const ProductDetail = () => {
     const [quantityInStock, setQuantityInStock] = useState<number>(0);
     const [buyQuantity, setBuyQuantity] = useState<number>(1);
     const [comments, setComments] = useState<CommentResponse[]>([]);
-    
+
     const changeActiveSize = (index: number) => {
         setActiveSize(index);
     }
@@ -94,14 +101,14 @@ const ProductDetail = () => {
     }
 
     useEffect(() => {
-        if(!isConnected()) {
+        if (!isConnected()) {
             connect(onConnected, onError);
         }
-        else if(stompClient) {
-            stompClient.subscribe(`/topic/product/${id}`, onMessageReceived, {id: id});
+        else if (stompClient) {
+            stompClient.subscribe(`/topic/product/${id}`, onMessageReceived, { id: id });
         }
         return () => {
-            if(isConnected() && stompClient) {
+            if (isConnected() && stompClient) {
                 stompClient.unsubscribe(`${id}`);
             }
         }
@@ -109,24 +116,25 @@ const ProductDetail = () => {
 
     useEffect(() => {
         (async () => {
-           try {
-                const response : ResponseSuccess<PageResponse<CommentResponse[]>> = await getPageCommentsByProductId(1, 10, Number(id));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            try {
+                const response: ResponseSuccess<PageResponse<CommentResponse[]>> = await getPageCommentsByProductId(1, 10, Number(id));
                 setComments(response.data.data);
-           } catch (error) {
+            } catch (error) {
                 console.log(error);
-           }
-        } )();
+            }
+        })();
     }, []);
 
     const onMessageReceived = (message: Message) => {
-        const commentData : CommentResponse = JSON.parse(message.body);
+        const commentData: CommentResponse = JSON.parse(message.body);
         setComments(prev => [commentData, ...prev]);
     }
 
     const onConnected = () => {
         console.log("Connected to websocket server product detail");
-        if(isConnected() && stompClient) {
-            stompClient.subscribe(`/topic/product/${id}`, onMessageReceived, {id: id});
+        if (isConnected() && stompClient) {
+            stompClient.subscribe(`/topic/product/${id}`, onMessageReceived, { id: id });
         }
     }
 
@@ -229,7 +237,7 @@ const ProductDetail = () => {
                         {product?.productName}
                     </Typography>
                     <Typography>
-                        Nhà cung cấp: {product?.provider?.providerName}
+                        Thương hiệu: {product?.provider?.providerName}
                     </Typography>
                     <Box sx={{ display: 'flex', gap: '25px' }}>
                         <Typography sx={{
@@ -257,7 +265,9 @@ const ProductDetail = () => {
                             </Typography>
                             <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                 {colors.map((color: ColorModel, index: number) => (
-                                    <SizeColorBox key={color.id} text={color.colorName ?? ''} changeActive={changeActiveColor}
+                                    <SizeColorBox sx={{ 
+                                        border: `3px solid ${index === activeColor ? '#4caf50' : 'white'}`,
+                                    }} color={color.colorHex} key={color.id} text={color.colorName ?? ''} changeActive={changeActiveColor}
                                         index={index} activeIndex={activeColor} />
                                 ))}
                             </Box>
@@ -268,7 +278,9 @@ const ProductDetail = () => {
                             </Typography>
                             <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                 {sizes.map((size: SizeModel, index: number) => (
-                                    <SizeColorBox key={size.id} text={size.numberSize?.toString() ?? size.textSize ?? ''}
+                                    <SizeColorBox sx={{ 
+                                        border: `3px solid ${index === activeSize ? '#4caf50' : 'white'}`,
+                                    }} key={size.id} text={size.numberSize?.toString() ?? size.textSize ?? ''}
                                         changeActive={changeActiveSize} index={index} activeIndex={activeSize} />
                                 ))}
                             </Box>
@@ -278,7 +290,7 @@ const ProductDetail = () => {
                                 Số lượng trong kho: {quantityInStock?.toString()}
                             </Typography>
                         </Box>
-                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Typography>
                                 Số lượng:
                             </Typography>
@@ -300,23 +312,27 @@ const ProductDetail = () => {
                     </Box>
                 </Box>
             </Box>
-            <Typography  variant="h6">Mô tả sản phẩm</Typography>
+            <Typography variant="h6" sx={{mt: 2}}>Mô tả sản phẩm</Typography>
             <Box>
-                <Box>
-
-                </Box>
-                <Box>
-                    <Box>
-
-                    </Box>
-                    <Box></Box>
-                </Box>
+                {product?.description}     
+            </Box>
+            <Typography variant="h6" sx={{mt: 2}}>Thông tin thương hiệu</Typography>
+            <Box>
+                Thương hiệu: {product?.provider?.providerName}     
+            </Box>
+            <Box>
+                Địa chỉ: {`${product?.provider?.address?.street}, ${product?.provider?.address?.district}, ${product?.provider?.address?.city}`}     
+            </Box>
+            <Box>
+                Email: {product?.provider?.email}     
+            </Box>
+            <Box>
+                Số điện thoại: {product?.provider?.phoneNumber}     
             </Box>
             <Typography sx={{ mt: 2 }} variant="h6">Đánh giá</Typography>
             <Box>
-                <CommentForm productId={Number(id)}></CommentForm>
-                {comments.map((comment) => 
-                    <CommentView commentResponse={comment} key={comment.comment.id}/>
+                {comments.map((comment) =>
+                    <CommentView commentResponse={comment} key={comment.comment.id} />
                 )}
             </Box>
             <Typography sx={{ mt: 2 }} variant="h6">Các sản phẩm tương tự</Typography>

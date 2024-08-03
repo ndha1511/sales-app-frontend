@@ -4,5 +4,5 @@ export type ProductUserResponse = {
     product: ProductModel;
     discount?: number;
     discountedPrice?: number;
-    expiredDate?: Date;    
+    expiredDate?: Date;   
 }

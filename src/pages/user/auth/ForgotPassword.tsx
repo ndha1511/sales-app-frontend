@@ -5,7 +5,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Container, TextField, useColorScheme, useMediaQuery } from '@mui/material';
+import { Container, TextField, useMediaQuery } from '@mui/material';
 import { getVeriryCode, resetPassword, verifyResetPassword } from '../../../services/auth.service';
 import { VerifyEmailDto } from '../../../dtos/requests/verify-email.dto';
 import { ResetPasswordRequest } from '../../../dtos/requests/reset-password-request';
@@ -24,7 +24,6 @@ export default function ForgotPassword() {
     const [otp, setOtp] = React.useState("");
     const [password, setPassword] = React.useState("");
     const navigate = useNavigate();
-    const { mode } = useColorScheme();
     const isMobile: boolean = useMediaQuery('(max-width:768px)');
     const isMedium: boolean = useMediaQuery('(max-width:980px)');
 
@@ -167,7 +166,7 @@ export default function ForgotPassword() {
                 flexGrow: isMobile ? 1 : 0,
                 display: "flex",
                 justifyContent: 'center',
-                backgroundColor: mode === "dark" ? "common.black" : "common.white",
+                backgroundColor: "common.black",
                 p: 3,
                 gap: '12px',
                 flexDirection: "column",

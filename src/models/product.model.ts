@@ -14,5 +14,6 @@ export type ProductModel = {
     thumbnail?: string;
     productStatus?: Status;
     totalQuantity?: number;
+    buyQuantity?: number; 
 
 }

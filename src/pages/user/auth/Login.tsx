@@ -8,7 +8,6 @@ import {
     TextField,
     Tooltip,
     Typography,
-    useColorScheme,
     useMediaQuery
 } from "@mui/material";
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -36,7 +35,6 @@ const validationLoginSchema = yup.object({
 });
 
 const Login = () => {
-    const { mode } = useColorScheme();
     const isMobile: boolean = useMediaQuery('(max-width:768px)');
     const isMedium: boolean = useMediaQuery('(max-width:980px)');
     const [error, setError] = useState("");
@@ -85,7 +83,7 @@ const Login = () => {
                 flexGrow: isMobile ? 1 : 0,
                 display: "flex",
                 justifyContent: 'center',
-                backgroundColor: mode === "dark" ? "common.black" : "common.white",
+                backgroundColor: "common.black",
                 p: 3,
                 gap: '12px',
                 flexDirection: "column",
@@ -188,12 +186,12 @@ const Login = () => {
                 }}>
                     <Tooltip title="facebook">
                         <IconButton onClick={() => loginWithSocial('facebook')} size="large" >
-                            <FacebookIcon fontSize="large" sx={{ color: mode === 'light' ? "blue" : '' }} />
+                            <FacebookIcon fontSize="large" />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="google">
                         <IconButton onClick={() => loginWithSocial('google')} size="large">
-                            <GoogleIcon fontSize="large" sx={{ color: mode === 'light' ? "red" : '' }} />
+                            <GoogleIcon fontSize="large"  />
                         </IconButton>
                     </Tooltip>
                 </Box>

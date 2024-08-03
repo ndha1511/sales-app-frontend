@@ -16,7 +16,7 @@ type Props = {
 const CartItem = ({ item }: Props) => {
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState<number>(item.quantity);
-    const distpatch = useDispatch();
+    const dispatch = useDispatch();
 
     const setQuantityProp = (quantity: number) => {
         setQuantity(quantity);
@@ -25,46 +25,106 @@ const CartItem = ({ item }: Props) => {
     const deleteItemCart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation();
         removeItemCart(item);
-        distpatch(updateCartState());
+        dispatch(updateCartState());
     }
+
     return (
         <Box sx={{
             display: 'flex',
-            p: 1,
+            flexWrap: 'wrap',
+            gap: '12px',
             alignItems: 'center',
-            gap: '10px',
-            ':hover': {
-                backgroundColor: 'secondary.main'
+            p: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            mb: 2,
+            backgroundColor: 'background.paper',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            transition: 'background-color 0.3s ease',
+            '&:hover': {
+                backgroundColor: 'action.hover',
             },
-            cursor: 'pointer'
-        }} onClick={() => (navigate("/products/" + item.productDetail.product?.id))}>
-            <img src={item.productDetail.product?.thumbnail ?? ""} alt={item.productDetail.product?.productName ?? ""} width={"15%"} height={150} />
-            <Box sx={{width: '15%'}}>
-                <Typography>Tên sản phẩm: {item.productDetail.product?.productName}</Typography>
+            '@media (max-width: 600px)': {
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+            }
+        }} onClick={() => navigate("/products/" + item.productDetail.product?.id)}>
+            <Box sx={{
+                flexShrink: 0,
+                mb: { xs: 1, sm: 0 }, // margin-bottom nhỏ hơn trên màn hình nhỏ
+                width: { xs: '100px', sm: '80px' } // Điều chỉnh kích thước ảnh trên màn hình nhỏ
+            }}>
+                <img src={item.productDetail.product?.thumbnail ?? ""} alt={item.productDetail.product?.productName ?? ""} width="100%" height="auto" style={{ objectFit: 'cover', borderRadius: '4px' }} />
             </Box>
-            <Box sx={{width: '20%'}}>
-                <Box>
-                    <Typography>Màu sắc: {item.productDetail.color.colorName}</Typography>
-                </Box>
-                <Box>
-                    <Typography>Kích thước: {item.productDetail.size.numberSize ?? item.productDetail.size.textSize}</Typography>
-                </Box>
+            <Box sx={{
+                flex: 2,
+                mb: { xs: 1, sm: 0 }, // margin-bottom nhỏ hơn trên màn hình nhỏ
+                width: { xs: '100%', sm: 'auto' }
+            }}>
+                <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                    {item.productDetail.product?.productName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    Màu sắc: {item.productDetail.color.colorName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    Kích thước: {item.productDetail.size.numberSize ?? item.productDetail.size.textSize}
+                </Typography>
             </Box>
-            <Box sx={{width: '20%'}}>
-                <Typography>Đơn giá: {convertPrice(item.productDetail.product?.price)}</Typography>
+            <Box sx={{
+                flex: 1,
+                mb: { xs: 1, sm: 0 },
+                width: { xs: '100%', sm: 'auto' }
+            }}>
+                <Typography variant="body2" color="text.secondary">
+                    Đơn giá: {convertPrice(item.productDetail.product?.price)}
+                </Typography>
             </Box>
-            <Box onClick={(e) => { e.stopPropagation() }} sx={{width: '20%'}}>
-                <Typography>Còn {item.productDetail.quantity} sản phẩm</Typography>
+            <Box sx={{
+                flex: 1,
+                mb: { xs: 1, sm: 0 },
+                width: { xs: '100%', sm: 'auto' }
+            }}>
+                <Typography variant="body2" color="text.secondary">
+                    Còn {item.productDetail.quantity} sản phẩm
+                </Typography>
                 <QuantityProduct cartItem={item} quantity={quantity} setQuantity={setQuantityProp} maxValue={item.productDetail?.quantity ?? 0} />
             </Box>
-            <Box sx={{width: '20%'}}>
-                <Typography>Số tiền: {convertPrice((item.productDetail.product?.price ?? 0) * (item.quantity ?? 0))}</Typography>
+            <Box sx={{
+                flex: 1,
+                mb: { xs: 1, sm: 0 },
+                width: { xs: '100%', sm: 'auto' }
+            }}>
+                <Typography variant="body2" color="text.secondary">
+                    Số tiền: {convertPrice((item.productDetail.product?.price ?? 0) * (item.quantity ?? 0))}
+                </Typography>
             </Box>
-            <Box sx={{width: '8%'}}>
-                <Tooltip title="xóa">
-                    <Button variant="contained" size="small" color="error"
+            <Box sx={{
+                flexShrink: 0,
+                width: { xs: '100%', sm: 'auto' },
+                display: 'flex',
+                justifyContent: { xs: 'center', sm: 'flex-start' } // Canh giữa nút xóa trên màn hình nhỏ
+            }}>
+                <Tooltip title="Xóa">
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        color="error"
                         onClick={(e) => deleteItemCart(e)}
-                    ><DeleteIcon /></Button>
+                        sx={{
+                            borderRadius: '4px',
+                            color: 'error.main',
+                            borderColor: 'error.main',
+                            '&:hover': {
+                                backgroundColor: 'error.light',
+                                borderColor: 'error.dark',
+                                color: 'error.contrastText',
+                            },
+                        }}
+                    >
+                        <DeleteIcon />
+                    </Button>
                 </Tooltip>
             </Box>
         </Box>

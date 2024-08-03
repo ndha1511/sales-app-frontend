@@ -2,7 +2,7 @@ import {
     AppBar,
     Avatar,
     Badge,
-    Box, useColorScheme,
+    Box, 
     useMediaQuery
 } from "@mui/material";
 import Drawer from '@mui/material/Drawer';
@@ -14,15 +14,15 @@ import logoIcon from "../../assets/logo/logo-icon.png";
 import {useState} from "react";
 import NavBar from "../common/NavBar.tsx";
 import SearchInput from "../../components/common/search-input/SearchInput.tsx";
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+// import Brightness4Icon from '@mui/icons-material/Brightness4';
+// import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Tooltip from '@mui/material/Tooltip';
 import { adminMenu } from "../common/Menu.tsx";
 
 
 const Header = () => {
     const isMobile: boolean = useMediaQuery('(max-width:600px)');
-    const {mode, setMode} = useColorScheme();
+    // const {mode, setMode} = useColorScheme();
     const [open, setOpen] = useState(false);
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
@@ -47,7 +47,7 @@ const Header = () => {
             display: "flex", width: isMobile ? '65%' : '15%', justifyContent: 'space-evenly',
             alignItems: "center"
         }}>
-            <Tooltip title={mode === 'light' ? "giao diện tối" : "giao diện sáng"}>
+            {/* <Tooltip title={mode === 'light' ? "giao diện tối" : "giao diện sáng"}>
                 <IconButtonGradient type="button" aria-label="mode"
                                     onClick={() => {
                                         setMode(mode === 'light' ? 'dark' : 'light');
@@ -55,7 +55,7 @@ const Header = () => {
                 >
                     {mode === 'light' ? <Brightness4Icon/> : <Brightness7Icon/>}
                 </IconButtonGradient>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title={"Thông báo"}>
             <IconButtonGradient type="button" aria-label="message">
                 <Badge badgeContent={4} color="primary">

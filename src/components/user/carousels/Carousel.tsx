@@ -1,5 +1,5 @@
 import { Box, IconButton, useMediaQuery } from "@mui/material";
-import carousel1 from "../../../assets/carousels/carousel1.png";
+import carousel1 from "../../../assets/carousels/carousel1.jpg";
 import carousel2 from "../../../assets/carousels/carousel2.jpg";
 import carousel3 from "../../../assets/carousels/carousel3.jpg";
 import styled from "styled-components";
@@ -37,7 +37,7 @@ type Props = {
     children?: ReactNode;
 }
 
-const Carousel = ({children} : Props) => {
+const Carousel = ({ children }: Props) => {
     const [viewIndex, setViewIndex] = useState<number>(0);
     const isMobile: boolean = useMediaQuery('(max-width:600px)');
 
@@ -54,7 +54,7 @@ const Carousel = ({children} : Props) => {
     return (
         <CarouselBackground sx={{
             backgroundImage: `url(${images[viewIndex]})`,
-            height: isMobile ? '200px': '400px'
+            height: isMobile ? '200px' : '400px'
         }}>
             <IconButton sx={{
                 position: "absolute",
@@ -68,8 +68,19 @@ const Carousel = ({children} : Props) => {
                     backgroundColor: "rgba(0,0,0,0.8)",
                 }
             }} onClick={() => setViewIndex(prev => (prev === 0 ? images.length - 1 : prev - 1))}
-            ><ArrowBackIosNewIcon/></IconButton>
-            {children}
+            ><ArrowBackIosNewIcon /></IconButton>
+            <Box sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: "8px",
+                width: "100%",
+                height: "100%",
+                pb: 5,
+                flexDirection: "column",
+            }}>
+                {children}
+            </Box>
             <IconButton sx={{
                 position: "absolute",
                 top: "40%",
@@ -83,7 +94,7 @@ const Carousel = ({children} : Props) => {
                     backgroundColor: "rgba(0,0,0,0.8)",
                 }
             }} onClick={() => setViewIndex(prev => (prev === images.length - 1 ? 0 : prev + 1))}
-            ><ArrowForwardIosIcon/></IconButton>
+            ><ArrowForwardIosIcon /></IconButton>
         </CarouselBackground>
     )
 }

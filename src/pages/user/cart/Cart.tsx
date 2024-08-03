@@ -1,4 +1,4 @@
-import { Box, Button, Container, Drawer, Typography } from "@mui/material";
+import { Box, Button, Container, Typography, useMediaQuery, useTheme, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import CartEmpty from "./CartEmpty";
@@ -14,7 +14,12 @@ const Cart = () => {
     const cart = useSelector((state: RootState) => state.cart.items);
     const [totalMoney, setTotalMoney] = useState<number>(0);
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
+    const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+
+    // Hook để xử lý responsive
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
     useEffect(() => {
         let total = 0;
         cart.forEach((cartItem: CartItemModel) => {
@@ -23,49 +28,76 @@ const Cart = () => {
         setTotalMoney(total);
     }, [cart]);
 
-    const openDrawer = () => {
+    const handleCheckout = () => {
         if (!isLogin()) {
             localStorage.setItem("historyPath", location.pathname);
-            navigate('/auth/login', {state: { from: '/cart'}});
+            navigate('/auth/login', { state: { from: '/cart' } });
         }
-        setOpen(true);
+        setShowPaymentDialog(true);
     };
+
+    const handleCloseDialog = () => {
+        setShowPaymentDialog(false);
+    };
+
     return (
         <Container sx={{
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            padding: isMobile ? 1 : 2,
+            maxWidth: 'lg',
+            mx: 'auto'
         }}>
             {cart.length > 0 ?
                 <>
                     <Box sx={{
-                        maxHeight: "50vh",
+                        maxHeight: isMobile ? '40vh' : '50vh',
                         overflow: 'auto',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '10px'
+                        gap: 2,
+                        mb: 2
                     }}>
                         {cart.map((cartItem: CartItemModel, index: number) => (
                             <CartItem key={index} item={cartItem} />
                         ))}
                     </Box>
-                    <Box>
-                        <Typography>Tổng tiền: {convertPrice(totalMoney)}</Typography>
+                    <Box sx={{
+                        mb: 2
+                    }}>
+                        <Typography variant={isMobile ? 'body2' : 'h6'}>
+                            Tổng tiền: {convertPrice(totalMoney)}
+                        </Typography>
                     </Box>
-                    <Box>
-                        <Button>Chọn mã giảm giá</Button>
-                    </Box>
-                    <Button onClick={openDrawer}>Thanh toán</Button>
-                    <Drawer
-                        anchor={"bottom"}
-                        open={open}
-                        onClose={() => setOpen(false)}
+                    <Button
+                        onClick={handleCheckout}
+                        variant="contained"
+                        color="primary"
+                        fullWidth={isMobile}
                     >
-                        <Payment/>
-                    </Drawer>
-                </> :
+                        Thanh toán
+                    </Button>
+                    <Dialog
+                        open={showPaymentDialog}
+                        onClose={handleCloseDialog}
+                        fullWidth
+                        maxWidth="md"
+                    >
+                        <DialogTitle>Thanh toán</DialogTitle>
+                        <DialogContent>
+                            <Payment />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleCloseDialog} color="primary">
+                                Đóng
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </>
+                :
                 <CartEmpty />}
         </Container>
-    )
-}
+    );
+};
 
 export default Cart;
